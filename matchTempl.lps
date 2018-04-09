@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Release"/>
+    <Units Count="19">
+      <Unit0>
+        <Filename Value="matchTempl.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="12"/>
+        <CursorPos X="28" Y="41"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value=""/>
+        <UsageCount Value="10"/>
+        <DefaultSyntaxHighlighter Value="None"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="SimbaPlugin.inc"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="27"/>
+        <CursorPos X="3" Y="46"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="radix2_fft.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="6"/>
+        <CursorPos Y="27"/>
+        <UsageCount Value="58"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="header.inc"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="10" Y="11"/>
+        <UsageCount Value="82"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="threading.pas"/>
+        <UnitName Value="Threading"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="51"/>
+        <CursorPos X="3" Y="65"/>
+        <UsageCount Value="100"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="misc.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5"/>
+        <CursorPos X="50" Y="127"/>
+        <UsageCount Value="75"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="fftpack.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="276"/>
+        <CursorPos X="3" Y="300"/>
+        <UsageCount Value="77"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="fftpack_core.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="12" Y="272"/>
+        <UsageCount Value="53"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="core.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="42"/>
+        <CursorPos X="28" Y="65"/>
+        <UsageCount Value="52"/>
+        <Loaded Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="matrix\shiftdiff.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="37"/>
+        <CursorPos X="5" Y="55"/>
+        <UsageCount Value="7"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="matrix\localsum.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="18" Y="3"/>
+        <UsageCount Value="11"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="matrix\stats.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="50"/>
+        <CursorPos X="25" Y="76"/>
+        <UsageCount Value="3"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="matrix\size.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="14" Y="22"/>
+        <UsageCount Value="19"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="matrix\rot90.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5" Y="13"/>
+        <UsageCount Value="3"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="matrix.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="72" Y="42"/>
+        <UsageCount Value="11"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="matrix\matrix.pas"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="9" Y="7"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="fftpack\fftpack.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="20" Y="283"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="fftpack\fftpack_core.pas"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="172"/>
+        <CursorPos X="5" Y="185"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit18>
+    </Units>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="matchTempl.lpr"/>
+        <Caret Line="11" Column="15"/>
+      </Position1>
+      <Position2>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="7" Column="9"/>
+      </Position2>
+      <Position3>
+        <Filename Value="matchTempl.lpr"/>
+        <Caret Line="11" Column="15"/>
+      </Position3>
+      <Position4>
+        <Filename Value="fftpack\fftpack.pas"/>
+        <Caret Line="283" Column="20"/>
+      </Position4>
+      <Position5>
+        <Filename Value="core.pas"/>
+        <Caret Line="74" Column="90" TopLine="47"/>
+      </Position5>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

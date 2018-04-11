@@ -76,6 +76,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="..;..\..;..\..\..;..\Plugins;..\..\Plugins;..\..\..\Plugins"/>
             <OtherUnitFiles Value="matrix;fftpack"/>
             <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>

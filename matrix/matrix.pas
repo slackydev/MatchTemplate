@@ -20,17 +20,25 @@ procedure SplitRGB(img: T2DIntArray; out R,G,B: T2DRealArray); callconv
 function IntToSingle(a: T2DIntArray): T2DSingleArray; callconv
 function IntToDouble(a: T2DIntArray): T2DDoubleArray; callconv
 
-function Pad2(a: T2DIntArray; M,N: Int32; init:Int32=0): T2DIntArray; callconv
-function Pad2(a: T2DSingleArray; M,N: Int32; init:Single=0): T2DSingleArray; callconv
-function Pad2(a: T2DDoubleArray; M,N: Int32; init:Double=0): T2DDoubleArray; callconv
+function Pad2(a: T2DIntArray; M,N: Int32): T2DIntArray; callconv
+function Pad2(a: T2DSingleArray; M,N: Int32): T2DSingleArray; callconv
+function Pad2(a: T2DDoubleArray; M,N: Int32): T2DDoubleArray; callconv
 
 function ShiftResize(a: T2DIntArray; M,N: Int32): T2DIntArray; callconv
 function ShiftResize(a: T2DSingleArray; M,N: Int32): T2DSingleArray; callconv
 function ShiftResize(a: T2DDoubleArray; M,N: Int32): T2DDoubleArray; callconv
 
-function LocalSum(a: T2DIntArray; th,tw: Int32; padval: Int32): T2DIntArray; callconv
-function LocalSum(a: T2DSingleArray; th,tw: Int32; padval: Single): T2DSingleArray; callconv
-function LocalSum(a: T2DDoubleArray; th,tw: Int32; padval: Double): T2DDoubleArray; callconv
+function LocalSum(a: T2DIntArray; th,tw: Int32): T2DIntArray; callconv
+function LocalSum(a: T2DSingleArray; th,tw: Int32): T2DSingleArray; callconv
+function LocalSum(a: T2DDoubleArray; th,tw: Int32): T2DDoubleArray; callconv
+
+function Sums(a: T2DIntArray; out Square: T2DIntArray): T2DIntArray;
+function Sums(a: T2DSingleArray; out Square: T2DDoubleArray): T2DDoubleArray;
+function Sums(a: T2DDoubleArray; out Square: T2DDoubleArray): T2DDoubleArray;
+
+function SumsPd(a: T2DIntArray; out Square: T2DIntArray): T2DIntArray;
+function SumsPd(a: T2DSingleArray; out Square: T2DDoubleArray): T2DDoubleArray;
+function SumsPd(a: T2DDoubleArray; out Square: T2DDoubleArray): T2DDoubleArray;
 
 function Rot90(a: T2DIntArray): T2DIntArray; callconv
 function Rot90(a: T2DSingleArray): T2DSingleArray; callconv
@@ -96,6 +104,7 @@ end;
 {$I pad2.inc}
 {$I shiftresize.inc}
 {$I localsum.inc}
+{$I sums.inc}
 {$I rot90.inc}
 {$I stats.inc}
 {$I sqr.inc}

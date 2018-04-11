@@ -8,7 +8,7 @@ library matchTempl;
 
 uses
   SysUtils, Math, 
-  core, matrix, threading, fftpack;
+  core, matrix, threading, fftpack, FFTW3;
 
 // --------------------------------------------------------------------------------
 // a * conj(b)
@@ -53,7 +53,7 @@ end;
 // --------------------------------------------------------------------------------
 // cross correlate
 
-function CrossCorr_1c(const img, sub: T2DRealArray): T2DRealArray; callconv
+function CrossCorrChannel(img, sub: T2DRealArray): T2DRealArray; callconv
 var
   x,y,H,W,kH,kW: Int32;
   a,b: T2DComplexArray;
@@ -61,77 +61,180 @@ begin
   Size(img, W,H);
   Size(sub, kW,kH);
 
-  SetLength(a, OptimalDFTSize(H), OptimalDFTSize(W));
-  SetLength(b, OptimalDFTSize(H), OptimalDFTSize(W));
+  if FFTW3.HAS_FFTW then
+  begin
+    SetLength(img, FFTW3.OptimalDFTSize(H), FFTW3.OptimalEvenDFTSize(W));
+    SetLength(sub, FFTW3.OptimalDFTSize(H), FFTW3.OptimalEvenDFTSize(W));
+    a := FFTW3.FFT2_R2C(img);
+    b := FFTW3.FFT2_R2C(sub);
+  end else
+  begin
+    SetLength(a, FFTPACK.OptimalDFTSize(H), FFTPACK.OptimalDFTSize(W));
+    SetLength(b, FFTPACK.OptimalDFTSize(H), FFTPACK.OptimalDFTSize(W));
+    for y:=0 to H-1  do for x:=0 to W-1  do a[y,x].re := img[y,x];
+    for y:=0 to kH-1 do for x:=0 to kW-1 do b[y,x].re := sub[y,x];
+    a := FFT2MT(a, False);
+    b := FFT2MT(b, False);
+  end;
 
-  for y:=0 to H-1  do for x:=0 to W-1  do a[y,x].re := img[y,x];
-  for y:=0 to kH-1 do for x:=0 to kW-1 do b[y,x].re := sub[y,x];
-
-  a := FFT2MT(a, False);
-  b := FFT2MT(b, False);
   b := MulSpectrumConj(a,b);
-  b := FFT2MT(b, True);
 
-  SetLength(Result, H,W);
-  for y:=0 to H-1 do for x:=0 to W-1 do Result[y,x] := b[y,x].re;
+  if FFTW3.HAS_FFTW then
+  begin
+    Result := FFTW3.FFT2_C2R(b);
+    SetLength(Result, H,W);
+    Exit;
+  end else
+  begin
+    b := FFT2MT(b, True);
+    SetLength(Result, H,W);
+    for y:=0 to H-1 do for x:=0 to W-1 do Result[y,x] := b[y,x].re;
+  end;
 end;
 
-function MatchTemplate_1c(const a,t: T2DRealArray): T2DRealArray; callconv
+
+function MatchTemplateFS(constref a,t: T2DRealArray): T2DRealArray; callconv
 var
   x,y,tw,th,aw,ah: Int32;
-  sigma_t, denom, numer, invSize, std_t, mean_t: Single;
-  ls_a, xcorr: T2DRealArray;
+  invSize, std_t, mean_t, sigma_t, denom, numer: Single;
+  xcorr: T2DRealArray;
+  asum, ls_diff: Double;
+  sum, sum2: T2DDoubleArray;
 
-  ls_diff: Double;
-  ls2_a: T2DDoubleArray;
+  time: Double;
+
+  function RegionSum(Y,X, M,N: Int32; Sums: T2DDoubleArray): Double; inline;
+  begin
+    Result := Sums[Y,X] - Sums[Y,X+N] - Sums[Y+M,X] + Sums[Y+M,X+N];
+  end;
 begin
-  // [ShiftResize] Result dimensions must match LocalSum results
-  xcorr := CrossCorr_1c(ShiftResize(a, High(t), High(t[0])), t);
+  time := MarkTime();
+  xcorr := CrossCorrChannel(a,t);
+  WriteLn(Format('XCORR:  %.3f ms', [MarkTime() - time]));
 
   Size(t, tw,th);
   invSize := 1.0 / (tw*th);
   MeanStdev(t, mean_t, std_t);
   sigma_t := Sqrt(tw*th-1) * std_t;
 
-  ls_a  := LocalSum(a, th,tw, 0);
-  ls2_a := LocalSum(SqrToDouble(a), th,tw, 0);
+  if sigma_t <> 0 then
+  begin
+    time := MarkTime();
+    sum := SumsPd(a, sum2);
+    WriteLn(Format('Sums:  %.3f ms', [MarkTime() - time]));
 
-  Size(ls_a, aw,ah);
-  SetLength(Result, ah,aw);
-  Dec(th); Dec(tw);
-  for y:=th to ah-th+1 do
-    for x:=tw to aw-tw+1 do
-    begin
-      ls_diff := ls2_a[y,x] - (Sqr(ls_a[y,x]) * invSize);
-      if ls_diff > 0 then
+    time := MarkTime();
+    Size(sum, aw,ah);
+    SetLength(Result, ah,aw);
+    for y:=0 to ah-th-1 do
+      for x:=0 to aw-tw-1 do
       begin
-        denom := sigma_t * Sqrt(ls_diff);
-        numer := xcorr[y,x] - ls_a[y,x] * mean_t;
-        if denom <> 0 then Result[y-th,x-tw] := numer / denom;
+        asum    := RegionSum(Y,X, th,tw, sum);
+        ls_diff := RegionSum(Y,X, th,tw, sum2) - (Sqr(asum) * invSize);
+        if ls_diff > 0 then
+        begin
+          denom := sigma_t * Sqrt(ls_diff);
+          numer := xcorr[y,x] - asum * mean_t;
+          Result[y,x] := numer / denom;
+        end;
       end;
-    end;
+    WriteLn(Format('Final: %.3f ms', [MarkTime() - time]));
+  end;
+
+  Size(a, aw,ah);
+  SetLength(Result, ah-th+1,aw-tw+1);
+end;
+
+
+function MatchTemplateSS(constref a,t: T2DRealArray): T2DRealArray; callconv
+var
+  x,y,tw,th,aw,ah: Int32;
+  invSize, std_t, mean_t, sigma_t, denom, numer: Single;
+  sum, xcorr: T2DRealArray;
+  asum, ls_diff: Double;
+  sum2: T2DDoubleArray;
+
+  time: Double;
+begin
+  Size(t, tw,th);
+
+  time := MarkTime();
+  xcorr := CrossCorrChannel(ShiftResize(a,th-1,tw-1), t);
+  WriteLn(Format('XCORR:  %.3f ms', [MarkTime() - time]));
+
+  invSize := 1.0 / (tw*th);
+  MeanStdev(t, mean_t, std_t);
+  sigma_t := Sqrt(tw*th-1) * std_t;
+
+  if sigma_t <> 0 then
+  begin
+    time := MarkTime();
+    sum  := LocalSum(a,th,tw);
+    sum2 := LocalSum(SqrToDouble(a),th,tw);
+    WriteLn(Format('Sums:  %.3f ms', [MarkTime() - time]));
+
+    time := MarkTime();
+    Size(sum, aw,ah);
+    SetLength(Result, ah,aw);
+    Dec(th); Dec(tw);
+    for y:=th to ah-th-1 do
+      for x:=tw to aw-tw-1 do
+      begin
+        ls_diff := sum2[y,x] - (Sqr(sum[y,x]) * invSize);
+        if ls_diff > 0 then
+        begin
+          denom := sigma_t * Sqrt(ls_diff);
+          numer := xcorr[y,x] - sum[y,x] * mean_t;
+          Result[y-th,x-tw] := numer / denom;
+        end;
+      end;
+    WriteLn(Format('Final: %.3f ms', [MarkTime() - time]));
+  end;
 
   Size(a, aw,ah);
   SetLength(Result, ah-th,aw-tw);
 end;
 
-function MatchTemplate(const img, sub: T2DIntArray): T2DRealArray; callconv
+
+function MatchTemplate(constref img, sub: T2DIntArray; maxThreads:Int32=-1): T2DRealArray; callconv
 var
   R1,G1,B1, R2,G2,B2: T2DRealArray;
-  G,B: T2DRealArray;
   x,y,W,H: Int32;
 begin
+  Size(img, W,H);
   SplitRGB(img, R1,G1,B1);
   SplitRGB(sub, R2,G2,B2);
-  Result := MatchTemplate_1c(R1,R2);       R1 := nil; R2 := nil;
-  G      := MatchTemplate_1c(G1,G2);       G1 := nil; G2 := nil;
-  B      := MatchTemplate_1c(B1,B2);       B1 := nil; B2 := nil;
+
+  if FFTW3.HAS_FFTW then
+  begin
+    if (maxThreads <= -1) and (W*H < FFTW3.MIN_THREDING_SZ) then
+      fftw_plan_with_nthreads(1)
+    else if (maxThreads <= -1) then
+      fftw_plan_with_nthreads(GetSystemThreadCount() div 2)
+    else
+      fftw_plan_with_nthreads(Min(maxThreads,GetSystemThreadCount()));
+  end;
+
+  if W*H <= 700*700 then //unsure if this is a truely safe number.
+  begin
+    // This can only handle input sizes up to.. As it will get inaccurate due to
+    // floatingpoint roundoff when it sums up some very large numbers.
+    R1 := MatchTemplateFS(R1,R2);  R2 := nil;
+    G1 := MatchTemplateFS(G1,G2);  G2 := nil;
+    B1 := MatchTemplateFS(B1,B2);  B2 := nil;
+  end else
+  begin
+    R1 := MatchTemplateSS(R1,R2);  R2 := nil;
+    G1 := MatchTemplateSS(G1,G2);  G2 := nil;
+    B1 := MatchTemplateSS(B1,B2);  B2 := nil;
+  end;
 
   // This is imperfect, but my guess is for this usage, it's OK
+  Result := R1;
   Size(Result, W,H);
   for y:=0 to H-1 do
     for x:=0 to W-1 do
-      Result[y,x] := (Result[y,x] + B[y,x] + G[y,x]) * 0.33333333;
+      Result[y,x] := (R1[y,x] + B1[y,x] + G1[y,x]) * 0.33333333;
 end;
 
 

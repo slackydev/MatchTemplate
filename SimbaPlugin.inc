@@ -42,7 +42,7 @@ begin
   AddType('TComplexArray',   'array of Complex');
   AddType('T2DComplexArray', 'array of TComplexArray');
 
-  AddMethod(@MatchTemplate, 'function MatchTemplate(const img, sub: T2DIntArray): T2DRealArray;');
+  AddMethod(@MatchTemplate, 'function MatchTemplate(constref img, sub: T2DIntArray; maxThreads:Int32=-1): T2DRealArray;');
 
   AddMethod(@fftpack.FFTInit, 'function FFTInit(n: Int32): TComplexArray;');
   AddMethod(@fftpack.FFT,     'function FFT(a,wsave: TComplexArray; Inplace: LongBool = False): TComplexArray;');

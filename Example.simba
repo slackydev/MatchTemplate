@@ -1,0 +1,119 @@
+program Example;
+{$loadlib matchTempl}
+
+function T2DRealArray.ArgMax(): TPoint; constref;
+var X,Y,W,H:Int32;
+begin
+  Result := Point(0,0);
+  H := High(self);
+  W := High(self[0]);
+
+  for Y:=0 to H do
+    for X:=0 to W do
+      if self[Y,X] > self[Result.y,Result.x] then
+      begin
+        Result.x := x;
+        Result.y := y;
+      end;
+end;
+
+function T2DRealArray.Min(): TReal; constref;
+var X,Y,W,H:Int32;
+begin
+  H := High(self);
+  W := High(self[0]);
+
+  Result := Self[0,0];
+  for Y:=0 to H do
+    for X:=0 to W do
+      if self[Y,X] < Result then
+        Result := self[Y,X];
+end;
+
+function T2DRealArray.Max(): TReal; constref;
+var X,Y,W,H:Int32;
+begin
+  H := High(self);
+  W := High(self[0]);
+
+  Result := Self[0,0];
+  for Y:=0 to H do
+    for X:=0 to W do
+      if self[Y,X] > Result then
+        Result := self[Y,X];
+end;
+
+function NormalizeMinMax(a: T2DRealArray; Alpha,Beta: TReal): T2DRealArray;
+var
+  Lo,Hi,oldRange,newRange:Extended;
+  X,Y,W,H: Int32;
+begin
+  H := High(a);
+  W := High(a[0]);
+  SetLength(Result, H+1,W+1);
+  Lo := a.Min();
+  Hi := a.Max();
+
+  oldRange := Hi-Lo;
+  newRange := Beta-Alpha;
+  if oldRange = 0 then Exit;
+  for Y:=0 to H do
+    for X:=0 to W do
+      Result[Y,X] := (a[Y,X] - lo) / oldRange * newRange + Alpha;
+end;
+
+procedure Plot(a: T2DRealArray);
+var
+  u:Extended;
+  W,H,x,y:Int32;
+  bmp: TMufasaBitmap;
+begin
+  bmp.Init(client.GetMBitmaps);
+  W := Length(a[0])-1;
+  H := Length(a)-1;
+  a := NormalizeMinMax(a, 0,1);
+  bmp.SetSize(W+1,H+1);
+
+  for y:=0 to H do
+    for x:=0 to W do
+    begin
+      u := a[y,x] * 100;
+      bmp.SetPixel(x,y,HSLToColor(75, u, u));
+     end;
+  DisplayDebugImgWindow(W,H);
+  DrawBitmapDebugImg(bmp.GetIndex);
+  bmp.Free();
+end;
+
+// -----------------------------------------------------------------------------
+// Example:
+
+procedure Run();
+var
+  bmp,sub: TMufasaBitmap;
+  xcorr: T2DRealArray;
+  W,H: Int32;
+  t: Int64;
+begin
+  GetClientDimensions(W,H);
+
+  bmp.Init(client.GetMBitmaps);
+  sub.Init(client.GetMBitmaps);
+  bmp.CopyClientToBitmap(client.GetIOManager, True, 0,0, W-1, H-1);
+  sub.CopyClientToBitmap(client.GetIOManager, True, 200,200, 499, 499);
+
+  t := GetTickCount();
+  xcorr := MatchTemplate(bmp.ToMatrix(), sub.ToMatrix());
+  WriteLn(GetTickCount() - t);
+  WriteLn('The best match was found at: ', xcorr.ArgMax);
+
+  Plot(xcorr);
+
+  bmp.Free();
+  sub.Free();
+end;
+
+
+begin
+  Run;
+end.

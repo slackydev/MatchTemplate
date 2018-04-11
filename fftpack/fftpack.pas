@@ -32,6 +32,9 @@ const
     8192, 8640, 8748, 9000, 9216, 9375, 9600, 9720, 10000
   );
 
+const
+  MIN_THREDING_SZ = 333*333;
+
 
 function OptimalDFTSize(target: Int32): Int32;
 
@@ -55,14 +58,13 @@ implementation
 uses
   Math, matrix, threading;
 
-
 function OptimalDFTSize(target: Int32): Int32;
 var
   n,match,quotient,p2,p5,p35: Int32;
 begin
   if (target <= 6) then
     Exit(target);
-
+  
   if NextPow2(target) = target then
     Exit(target);
   
@@ -303,15 +305,16 @@ begin
 
   Size(m, W,H);
   plan := FFTInit(W);
-  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @func], W,H, tc, 300*300);
+  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @func], W,H, tc, MIN_THREDING_SZ);
 
   m := Rot90(m);
   Size(m, W,H);
   plan := FFTInit(W);
-  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @func], W,H, tc, 300*300);
+  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @func], W,H, tc, MIN_THREDING_SZ);
 
   Result := Rot90(m);
   ThreadPool.Free();
 end;
+
 
 end.

@@ -15,10 +15,14 @@ type
   PParamArray = ^TParamArray;
   TParamArray = array[Word] of Pointer;
 
+  PReal = ^TReal;
   TReal = Single; //dont change me!
+
+  PComplex = ^Complex;
   Complex = packed record
     re, im: TReal;
   end;
+
   TComplexArray   = array of Complex;
   T2DComplexArray = array of TComplexArray;
 
@@ -78,6 +82,7 @@ begin
   Result := count / 1000;
   {$ENDIF} 
 end;
+
 
 
 

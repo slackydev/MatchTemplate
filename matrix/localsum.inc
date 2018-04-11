@@ -4,10 +4,10 @@
  For more info see: Copyright.txt
  Computes the local sum around the template size
 [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=}
-function LocalSum(a: T2DIntArray; th,tw: Int32; padval: Int32): T2DIntArray; callconv
+function LocalSum(a: T2DIntArray; th,tw: Int32): T2DIntArray; callconv
 var i,j,w,h:Int32;
 begin
-  a := Pad2(a, th,tw, padval);
+  a := Pad2(a, th,tw);
   h := Length(a);
   w := Length(a[0]);
   for j:=0 to w-1 do
@@ -25,10 +25,10 @@ begin
   Result := a;
 end;
 
-function LocalSum(a: T2DSingleArray; th,tw: Int32; padval: Single): T2DSingleArray; callconv
+function LocalSum(a: T2DSingleArray; th,tw: Int32): T2DSingleArray; callconv
 var i,j,w,h:Int32;
 begin
-  a := Pad2(a, th,tw, padval);
+  a := Pad2(a, th,tw);
   h := Length(a);
   w := Length(a[0]);
   for j:=0 to w-1 do
@@ -46,10 +46,10 @@ begin
   Result := a;
 end;
 
-function LocalSum(a: T2DDoubleArray; th,tw: Int32; padval: Double): T2DDoubleArray; callconv
+function LocalSum(a: T2DDoubleArray; th,tw: Int32): T2DDoubleArray; callconv
 var i,j,w,h:Int32;
 begin
-  a := Pad2(a, th,tw, padval);
+  a := Pad2(a, th,tw);
   h := Length(a);
   w := Length(a[0]);
   for j:=0 to w-1 do

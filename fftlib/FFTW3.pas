@@ -241,7 +241,7 @@ begin
   if (ForSize < Self.MinThreadingSize) then
     fftw_plan_with_nthreads(1)
   else
-    fftw_plan_with_nthreads(maxThreads)
+    fftw_plan_with_nthreads(Self.MaxThreads)
 end;
 
 
@@ -378,7 +378,7 @@ end;
 // Initialize library
 
 initialization
-  FFTW.Init(['','../', '../../'], GetSystemThreadCount() div 2);
+  FFTW.Init(['','../', '../../'], Min(4, GetSystemThreadCount()));
 
 
 end.

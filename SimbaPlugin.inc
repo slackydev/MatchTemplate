@@ -39,9 +39,14 @@ begin
   AddType('T2DRealArray', 'array of TRealArray');
 
   AddType('ETMFormula', '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
-  
+
+
   AddMethod(@MatchTemplate_Wrap, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula:ETMFormula=TM_CCOEFF_NORMED): T2DRealArray;');
-  
+  AddMethod(@LoadFFTWFrom,       'function  LoadFFTWFrom(constref Path: String): LongBool;');
+  AddMethod(@DisableFFTW,        'procedure DisableFFTW();');
+  AddMethod(@EnableFFTW,         'function  EnableFFTW(): LongBool');
+  AddMethod(@SetMaxFFTThreads,   'procedure SetMaxFFTThreads(MaxThreads: Int32);');
+
   MethodsLoaded := True;
   TypesLoaded := True;
 end;

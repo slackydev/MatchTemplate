@@ -266,7 +266,7 @@ end;
 // Initialize unit
 
 initialization
-  FFTPACK.Init(GetSystemThreadCount() div 2);
+  FFTPACK.Init(Min(4, GetSystemThreadCount()));
 
 
 end.

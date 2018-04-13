@@ -76,26 +76,26 @@ end;
 // --------------------------------------------------------------------------------
 // cross correlate
 
-function CCORR(big, sub: T2DRealArray): T2DRealArray;
+function CCORR(Image, Templ: T2DRealArray): T2DRealArray;
 var
-  x,y,w,h,tw,th: Int32;
+  x,y,aw,ah,tw,th: Int32;
   a,b: T2DComplexArray;
 begin
-  Size(big, w,h);
-  Size(sub, tw,th);
+  Size(Image, aw,ah);
+  Size(Templ, tw,th);
 
   if FFTW.IsLoaded then
   begin
-    SetLength(big, FFTW.OptimalDFTSize(H), FFTW.OptimalDFTSize(W));
-    SetLength(sub, FFTW.OptimalDFTSize(H), FFTW.OptimalDFTSize(W));
-    a := FFTW.FFT2_R2C(big);
-    b := FFTW.FFT2_R2C(sub);
+    SetLength(Image, FFTW.OptimalDFTSize(aH), FFTW.OptimalDFTSize(aW));
+    SetLength(Templ, FFTW.OptimalDFTSize(aH), FFTW.OptimalDFTSize(aW));
+    a := FFTW.FFT2_R2C(Image);
+    b := FFTW.FFT2_R2C(Templ);
   end else
   begin
-    SetLength(a, FFTPACK.OptimalDFTSize(H), FFTPACK.OptimalDFTSize(W));
-    SetLength(b, FFTPACK.OptimalDFTSize(H), FFTPACK.OptimalDFTSize(W));
-    for y:=0 to w-1  do for x:=0 to w-1  do a[y,x].re := big[y,x];
-    for y:=0 to th-1 do for x:=0 to tw-1 do b[y,x].re := sub[y,x];
+    SetLength(a, FFTPACK.OptimalDFTSize(aH), FFTPACK.OptimalDFTSize(aW));
+    SetLength(b, FFTPACK.OptimalDFTSize(aH), FFTPACK.OptimalDFTSize(aW));
+    for y:=0 to ah-1 do for x:=0 to aw-1 do a[y,x].re := Image[y,x];
+    for y:=0 to th-1 do for x:=0 to tw-1 do b[y,x].re := Templ[y,x];
     a := FFTPACK.FFT2(a);
     b := FFTPACK.FFT2(b);
   end;
@@ -105,16 +105,13 @@ begin
   if FFTW.IsLoaded then
   begin
     Result := FFTW.FFT2_C2R(b);
-    SetLength(Result, H,W);
-    Exit;
+    SetLength(Result, ah-th+1, aw-tw+1);
   end else
   begin
     b := FFTPACK.IFFT2(b);
-    SetLength(Result, H,W);
-    for y:=0 to H-1 do for x:=0 to W-1 do Result[y,x] := b[y,x].re;
+    SetLength(Result, ah-th+1, aw-tw+1);
+    for y:=0 to ah-th do for x:=0 to aw-tw do Result[y,x] := b[y,x].re;
   end;
-
-  SetLength(Result, h-th+1,w-tw+1);
 end;
 
 
@@ -310,6 +307,9 @@ end;
 
 function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
 begin
+  if FFTW.IsLoaded then
+    FFTW.PrepareThreads(Length(Image)*Length(Image[0]));
+
   case TMFormula of
     TM_CCORR:         Result := CCORR_RGB(Image, Templ, False);
     TM_CCORR_NORMED:  Result := CCORR_RGB(Image, Templ, True);

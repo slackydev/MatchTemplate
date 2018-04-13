@@ -14,7 +14,7 @@ uses
 type
   ETMFormula = (TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);
 
-function MatchTemplate(constref img, sub: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
+function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
 
 
 implementation
@@ -31,6 +31,7 @@ begin
   for y:=0 to H-1 do
     for x:=0 to W-1 do a[y,x] := InitValue;
 end;
+
 
 // --------------------------------------------------------------------------------
 // a * conj(b)
@@ -116,26 +117,67 @@ begin
   SetLength(Result, h-th+1,w-tw+1);
 end;
 
-function CCORR_NORMED(a,t: T2DRealArray): T2DRealArray;
+
+// ----------------------------------------------------------------------------
+
+function CCORR_RGB_HELPER(Image, Templ: T2DIntArray; out aR,aG,aB, tR,tG,tB: T2DRealArray): T2DRealArray;
+var
+  x,y,W,H: Int32;
+  xR,xG,xB: T2DRealArray;
+begin
+  SplitRGB(Image, aR,aG,aB);
+  SplitRGB(Templ, tR,tG,tB);
+
+  xR := CCORR(aR,tR);
+  xG := CCORR(aG,tG);
+  xB := CCORR(aB,tB);
+
+  Result := xR;
+  Size(Result, W,H);
+  for y:=0 to H-1 do
+    for x:=0 to W-1 do
+      Result[y,x] := xR[y,x] + xG[y,x] + xB[y,x];
+end;
+
+
+
+function CCORR_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
   x,y,tw,th,aw,ah: Int32;
-  invSize, numer, denom, tplSdv, tplMean, tplSigma, wndSum2: Double;
-  xcorr: T2DRealArray;
-  sum, sum2: T2DDoubleArray;
+  invSize, numer, denom, tplSdv, tplMean, tplSigma, mR,sR, mG,sG, mB,sB, wndSum2: Double;
+  sum2r, sum2g, sum2b: T2DDoubleArray;
+  xcorr, aR,aG,aB, tR,tG,tB: T2DRealArray;
 begin
-  xcorr := CCORR(a,t);
-  Size(t, tw,th);
-  invSize := Double(1.0) / Double(tw*th);
-  MeanStdev(t, tplMean, tplSdv);
-  tplSigma := Sqrt(Sqr(tplSdv) + Sqr(tplMean)) / Sqrt(invSize);
+  xcorr := CCORR_RGB_HELPER(Image, Templ, aR,aG,aB, tR,tG,tB);
 
-  sum := SumsPd(a, sum2);
-  Size(sum, aw,ah);
+  if not Normed then
+    Exit(xcorr);
+
+  Size(Templ, tw,th);
+  invSize := Double(1.0) / Double(tw*th);
+
+  MeanStdev(tR, mR, sR); tR := nil;
+  MeanStdev(tG, mG, sG); tG := nil;
+  MeanStdev(tB, mB, sB); tB := nil;
+
+  tplMean := Sqr(mR) + Sqr(mG) + Sqr(mB);
+  tplSdv  := Sqr(sR) + Sqr(sG) + Sqr(sB);
+
+  tplSigma := Sqrt(tplSdv + tplMean) / Sqrt(invSize);
+
+  SumsPd(aR, sum2r); aR := nil;
+  SumsPd(aG, sum2g); aG := nil;
+  SumsPd(aB, sum2b); aB := nil;
+
+  Size(sum2r, aw,ah);
   SetLength(Result, ah-th, aw-tw);
   for y:=0 to ah-th-1 do
     for x:=0 to aw-tw-1 do
     begin
-      wndSum2 := (sum2[Y,X] - sum2[Y,X+tw] - sum2[Y+th,X] + sum2[Y+th,X+tw]);
+      wndSum2 := sum2r[Y,X] - sum2r[Y,X+tw] - sum2r[Y+th,X] + sum2r[Y+th,X+tw];
+      wndSum2 += sum2g[Y,X] - sum2g[Y,X+tw] - sum2g[Y+th,X] + sum2g[Y+th,X+tw];
+      wndSum2 += sum2b[Y,X] - sum2b[Y,X+tw] - sum2b[Y+th,X] + sum2b[Y+th,X+tw];
+
       numer := xcorr[y,x];
       denom := tplSigma * Sqrt(wndSum2);
 
@@ -146,40 +188,65 @@ begin
     end;
 end;
 
-function CCOEFF(a,t: T2DRealArray; Normed: Boolean): T2DRealArray;
+function CCOEFF_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
   x,y,tw,th,aw,ah: Int32;
-  invSize, numer, denom, tplSdv, tplMean, tplSigma, wndDiff, wndSum: Double;
-  xcorr: T2DRealArray;
-  sum, sum2: T2DDoubleArray;
+  invSize, numer, denom, tplSdv, tplSigma, wndSum2, wndMean2: Double;
+  wndSumR, wndSumG, wndSumB: Double;
+  mR,sR, mG,sG, mB,sB: Double;
+  sumR, sumG, sumB, sum2r, sum2g, sum2b: T2DDoubleArray;
+  xcorr, aR,aG,aB, tR,tG,tB: T2DRealArray;
 begin
-  xcorr := CCORR(a,t);
-  Size(t, tw,th);
+  xcorr := CCORR_RGB_HELPER(Image, Templ, aR,aG,aB, tR,tG,tB);
 
+  Size(Templ, tw,th);
   invSize := Double(1.0) / Double(tw*th);
-  MeanStdev(t, tplMean, tplSdv);
-  tplSigma := tplSdv / Sqrt(invSize);
 
-  if tplSdv < 0.00001 then
+  if not Normed then
   begin
-    InitMatrix(Result, Length(xcorr), Length(xcorr[0]), 1);
-    Exit;
+    mR := Mean(tR); tR := nil;
+    mG := Mean(tG); tG := nil;
+    mB := Mean(tB); tB := nil;
+  end else
+  begin
+    MeanStdev(tR, mR, sR); tR := nil;
+    MeanStdev(tG, mG, sG); tG := nil;
+    MeanStdev(tB, mB, sB); tB := nil;
+
+    tplSdv  := Sqr(sR) + Sqr(sG) + Sqr(sB);
+
+    if tplSdv < 0.00001 then
+    begin
+      InitMatrix(Result, Length(xcorr), Length(xcorr[0]), 1);
+      Exit;
+    end;
+
+    tplSigma := Sqrt(tplSdv) / Sqrt(invSize);
   end;
 
-  sum := SumsPd(a, sum2);
-  Size(sum, aw,ah);
+  sumR := SumsPd(aR, sum2r); aR := nil;
+  sumG := SumsPd(aG, sum2g); aG := nil;
+  sumB := SumsPd(aB, sum2b); aB := nil;
+
+  Size(sumR, aw,ah);
   SetLength(Result, ah-th, aw-tw);
   for y:=0 to ah-th-1 do
     for x:=0 to aw-tw-1 do
     begin
-      wndSum := sum[Y,X] - sum[Y,X+tw] - sum[Y+th,X] + sum[Y+th,X+tw];
-      numer  := xcorr[y,x] - (wndSum * tplMean);
+      wndSumR  := sumR[Y,X] - sumR[Y,X+tw] - sumR[Y+th,X] + sumR[Y+th,X+tw];
+      wndSumG  := sumG[Y,X] - sumG[Y,X+tw] - sumG[Y+th,X] + sumG[Y+th,X+tw];
+      wndSumB  := sumB[Y,X] - sumB[Y,X+tw] - sumB[Y+th,X] + sumB[Y+th,X+tw];
 
+      wndMean2 := Sqr(wndSumR) + Sqr(wndSumG) + Sqr(wndSumB);
+      numer    := xcorr[y,x] - ((wndSumR * mR) + (wndSumG * mG) + (wndSumB * mB));
       if Normed then
       begin
-        wndDiff := (sum2[Y,X] - sum2[Y,X+tw] - sum2[Y+th,X] + sum2[Y+th,X+tw]) - (Sqr(wndSum) * invSize);
-        denom   := tplSigma * Sqrt(Max(0,wndDiff));
+        wndSum2  := sum2r[Y,X] - sum2r[Y,X+tw] - sum2r[Y+th,X] + sum2r[Y+th,X+tw];
+        wndSum2  += sum2g[Y,X] - sum2g[Y,X+tw] - sum2g[Y+th,X] + sum2g[Y+th,X+tw];
+        wndSum2  += sum2b[Y,X] - sum2b[Y,X+tw] - sum2b[Y+th,X] + sum2b[Y+th,X+tw];
+        wndMean2 := wndMean2 * invSize;
 
+        denom := tplSigma * Sqrt(Max(0, wndSum2 - wndMean2));
         if abs(numer) < denom then
           Result[y,x] := numer / denom
         else if abs(numer) < denom*1.25 then
@@ -189,28 +256,42 @@ begin
     end;
 end;
 
-function SQDIFF(a,t: T2DRealArray; Normed: Boolean): T2DRealArray;
+function SQDIFF_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
   x,y,tw,th,aw,ah: Int32;
-  invSize, numer, denom, tplSdv, tplMean, tplSigma, tplSum2, wndSum2: Double;
-  xcorr: T2DRealArray;
-  sum2: T2DDoubleArray;
+  invSize, numer, denom, tplSigma, tplSum2, wndSum2: Double;
+  tplMean, tplSdv, mR,sR, mG,sG, mB,sB:Double;
+  sum2r, sum2g, sum2b: T2DDoubleArray;
+  xcorr, aR,aG,aB, tR,tG,tB: T2DRealArray;
 begin
-  xcorr := CCORR(a,t);
-  Size(t, tw,th);
+  xcorr := CCORR_RGB_HELPER(Image, Templ, aR,aG,aB, tR,tG,tB);
 
+  Size(Templ, tw,th);
   invSize := Double(1.0) / Double(tw*th);
-  MeanStdev(t, tplMean, tplSdv);
-  tplSigma := Sqrt(Sqr(tplSdv) + Sqr(tplMean)) / Sqrt(invSize);
-  tplSum2  := (Sqr(tplSdv) + Sqr(tplMean)) / invSize;
 
-  SumsPd(a, sum2);
-  Size(sum2, aw,ah);
+  MeanStdev(tR, mR, sR); tR := nil;
+  MeanStdev(tG, mG, sG); tG := nil;
+  MeanStdev(tB, mB, sB); tB := nil;
+
+  tplMean := Sqr(mR) + Sqr(mG) + Sqr(mB);
+  tplSdv  := Sqr(sR) + Sqr(sG) + Sqr(sB);
+
+  tplSigma := Sqrt(tplSdv + tplMean) / Sqrt(invSize);
+  tplSum2  := (tplSdv + tplMean) / invSize;
+
+  SumsPd(aR, sum2r); aR := nil;
+  SumsPd(aG, sum2g); aG := nil;
+  SumsPd(aB, sum2b); aB := nil;
+
+  Size(sum2r, aw,ah);
   SetLength(Result, ah-th, aw-tw);
   for y:=0 to ah-th-1 do
     for x:=0 to aw-tw-1 do
     begin
-      wndSum2 := sum2[Y,X] - sum2[Y,X+tw] - sum2[Y+th,X] + sum2[Y+th,X+tw];
+      wndSum2 := sum2r[Y,X] - sum2r[Y,X+tw] - sum2r[Y+th,X] + sum2r[Y+th,X+tw];
+      wndSum2 += sum2g[Y,X] - sum2g[Y,X+tw] - sum2g[Y+th,X] + sum2g[Y+th,X+tw];
+      wndSum2 += sum2b[Y,X] - sum2b[Y,X+tw] - sum2b[Y+th,X] + sum2b[Y+th,X+tw];
+
       numer   := Max(0, wndSum2 - Double(2.0)*xcorr[y,x] + tplSum2);
       if Normed then begin
         denom := tplSigma * Sqrt(wndSum2);
@@ -224,108 +305,18 @@ begin
 end;
 
 
-
-// ----------------------------------------------------------------------------
-
-function CCORR_RGB(constref img, sub: T2DIntArray; Normed: Boolean): T2DRealArray;
-var
-  R1,G1,B1, R2,G2,B2: T2DRealArray;
-  x,y,W,H: Int32;
-begin
-  Size(img, W,H);
-  SplitRGB(img, R1,G1,B1);
-  SplitRGB(sub, R2,G2,B2);
-
-  if FFTW.IsLoaded then
-    FFTW.PrepareThreads(W*H);
-
-  if Normed then
-  begin
-    R1 := CCORR_NORMED(R1,R2);  R2 := nil;
-    G1 := CCORR_NORMED(G1,G2);  G2 := nil;
-    B1 := CCORR_NORMED(B1,B2);  B2 := nil;
-  end else
-  begin
-    R1 := CCORR(R1,R2);  R2 := nil;
-    G1 := CCORR(G1,G2);  G2 := nil;
-    B1 := CCORR(B1,B2);  B2 := nil;
-  end;
-
-  Result := R1;
-  Size(R1, w,h);
-  for y:=0 to h-1 do
-    for x:=0 to w-1 do
-      if Normed then
-        Result[y,x] := (R1[y,x] + B1[y,x] + G1[y,x]) * 0.333333333334
-      else
-        Result[y,x] := (R1[y,x] + B1[y,x] + G1[y,x]);
-end;
-
-function CCOEFF_RGB(constref img, sub: T2DIntArray; Normed:Boolean): T2DRealArray;
-var
-  R1,G1,B1, R2,G2,B2: T2DRealArray;
-  x,y,W,H: Int32;
-begin
-  Size(img, W,H);
-  SplitRGB(img, R1,G1,B1);
-  SplitRGB(sub, R2,G2,B2);
-
-  if FFTW.IsLoaded then
-    FFTW.PrepareThreads(W*H);
-
-  R1 := CCOEFF(R1,R2, Normed);  R2 := nil;
-  G1 := CCOEFF(G1,G2, Normed);  G2 := nil;
-  B1 := CCOEFF(B1,B2, Normed);  B2 := nil;
-
-  Result := R1;
-  Size(Result, W,H);
-  for y:=0 to H-1 do
-    for x:=0 to W-1 do
-      if Normed then
-        Result[y,x] := (R1[y,x] + G1[y,x] + B1[y,x]) * 0.333333333334
-      else
-        Result[y,x] := (R1[y,x] + G1[y,x] + B1[y,x]);
-end;
-
-function SQDIFF_RGB(constref img, sub: T2DIntArray; Normed:Boolean): T2DRealArray;
-var
-  R1,G1,B1, R2,G2,B2: T2DRealArray;
-  x,y,W,H: Int32;
-begin
-  Size(img, W,H);
-  SplitRGB(img, R1,G1,B1);
-  SplitRGB(sub, R2,G2,B2);
-
-  if FFTW.IsLoaded then
-    FFTW.PrepareThreads(W*H);
-
-  R1 := SQDIFF(R1,R2, Normed);  R2 := nil;
-  G1 := SQDIFF(G1,G2, Normed);  G2 := nil;
-  B1 := SQDIFF(B1,B2, Normed);  B2 := nil;
-
-  Result := R1;
-  Size(Result, W,H);
-  for y:=0 to H-1 do
-    for x:=0 to W-1 do
-      if Normed then
-        Result[y,x] := (R1[y,x] + G1[y,x] + B1[y,x]) * 0.333333333334
-      else
-        Result[y,x] := (R1[y,x] + G1[y,x] + B1[y,x]);
-end;
-
-
 // ----------------------------------------------------------------------------
 
 
-function MatchTemplate(constref img, sub: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
+function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
 begin
   case TMFormula of
-    TM_CCORR:         Result := CCORR_RGB(img,sub, False);
-    TM_CCORR_NORMED:  Result := CCORR_RGB(img,sub, True);
-    TM_CCOEFF:        Result := CCOEFF_RGB(img,sub, False);
-    TM_CCOEFF_NORMED: Result := CCOEFF_RGB(img,sub, True);
-    TM_SQDIFF:        Result := SQDIFF_RGB(img,sub, False);
-    TM_SQDIFF_NORMED: Result := SQDIFF_RGB(img,sub, True);
+    TM_CCORR:         Result := CCORR_RGB(Image, Templ, False);
+    TM_CCORR_NORMED:  Result := CCORR_RGB(Image, Templ, True);
+    TM_CCOEFF:        Result := CCOEFF_RGB(Image, Templ, False);
+    TM_CCOEFF_NORMED: Result := CCOEFF_RGB(Image, Templ, True);
+    TM_SQDIFF:        Result := SQDIFF_RGB(Image, Templ, False);
+    TM_SQDIFF_NORMED: Result := SQDIFF_RGB(Image, Templ, True);
     else
       raise Exception.Create('Not implemented');
   end;

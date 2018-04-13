@@ -62,10 +62,10 @@ implementation
 {$IFDEF LINUX}{$linklib c}{$ENDIF}
 
 uses
-  Math,
-  {$IF defined(WINDOWS)} Windows;
-  {$ELSEIF defined(freebsd) or defined(darwin)}ctypes, sysctl;
-  {$ELSEIF LINUX} ctypes; {$ENDIF}
+  {$IF defined(WINDOWS)}Windows,
+  {$ELSEIF defined(freebsd) or defined(darwin)}ctypes,sysctl,
+  {$ELSEIF LINUX}ctypes,{$ENDIF}
+  Math;
 
 function GetSystemThreadCount(): Int32;
 {$IF Defined(WINDOWS)}

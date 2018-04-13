@@ -9,9 +9,9 @@ library libMatchTempl;
 uses
   SysUtils, Math, core, matchTempl;
 
-function MatchTemplate_Wrap(constref Img, Sub: T2DIntArray; TMFormula: ETMFormula): T2DRealArray; callconv
+function MatchTemplate_Wrap(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray; callconv
 begin
-  Result := MatchTemplate(Img, Sub, TMFormula);
+  Result := MatchTemplate(Image, Templ, TMFormula);
 end;
 
 {$I SimbaPlugin.inc}

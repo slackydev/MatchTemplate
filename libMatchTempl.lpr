@@ -7,7 +7,7 @@ library libMatchTempl;
 {$I header.inc}
 
 uses
-  SysUtils, Math, core, matchTempl, FFTW3, FFTPACK4, threading;
+  SysUtils, Math, core, matchTempl, matrix, FFTW3, FFTPACK4, threading;
 
 function MatchTemplate_Wrap(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray; callconv
 begin
@@ -36,10 +36,27 @@ begin
   Result := False;
   if FFTW.Handle <> 0 then
   begin
-    FFTW.IsLoaded := False;
+    FFTW.IsLoaded := True;
     Result := True;
   end;
 end;
+
+
+// export a couple of stats related method to work with template matching result
+function expMin(constref a: T2DRealArray): TReal; callconv
+         var _:TReal; begin MinMax(a, Result, _);  end;
+
+function expMax(constref a: T2DRealArray): TReal; callconv
+         var _:TReal; begin MinMax(a, _, Result);  end;
+
+function expArgMin(constref a: T2DRealArray): TPoint; callconv
+         begin Result := ArgMin(a); end;
+
+function expArgMax(constref a: T2DRealArray): TPoint; callconv
+         begin Result := ArgMax(a); end;
+
+function expNormMinMax(constref a: T2DRealArray; Alpha, Beta: TReal): T2DRealArray; callconv
+         begin Result := NormMinMax(a, Alpha, Beta); end;
 
 
 {$I SimbaPlugin.inc}

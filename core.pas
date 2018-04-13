@@ -44,11 +44,15 @@ type
   TStrArray = array of String;
 
   PBox = ^TBox;
-  TBox = record X1,Y1,X2,Y2: Int32; end;
+  TBox = packed record X1,Y1,X2,Y2: Int32; end;
+
+  PPoint = ^TPoint;
+  TPoint = packed record X,Y: Int32; end;
 
 function NextPow2(n: Int32): Int32; inline;
 function ParamArray(arr: array of Pointer): TParamArray;
 function Box(X1,Y1,X2,Y2: Int32): TBox; inline;
+function Point(X,Y: Int32): TPoint; inline;
 function MarkTime(): Double;
 
 //-----------------------------------------------------------------------
@@ -103,6 +107,12 @@ begin
   Result.Y1 := Y1;
   Result.X2 := X2;
   Result.Y2 := Y2;
+end;
+
+function Point(X,Y: Int32): TPoint;
+begin
+  Result.X := X;
+  Result.Y := Y;
 end;
 
 

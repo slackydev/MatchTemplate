@@ -47,6 +47,13 @@ begin
   AddMethod(@EnableFFTW,         'function  EnableFFTW(): LongBool');
   AddMethod(@SetMaxFFTThreads,   'procedure SetMaxFFTThreads(MaxThreads: Int32);');
 
+  // stats helper methods
+  AddMethod(@expMin,        'function T2DRealArray.Min(): TReal; constref;');
+  AddMethod(@expMax,        'function T2DRealArray.Max(): TReal; constref;');
+  AddMethod(@expArgMin,     'function T2DRealArray.ArgMin(): TPoint; constref;');
+  AddMethod(@expArgMax,     'function T2DRealArray.ArgMax(): TPoint; constref;');
+  AddMethod(@expNormMinMax, 'function T2DRealArray.NormMinMax(A,B: TReal): T2DRealArray; constref;');
+
   MethodsLoaded := True;
   TypesLoaded := True;
 end;

@@ -378,7 +378,7 @@ end;
 // Initialize library
 
 initialization
-  FFTW.Init(['','../', '../../'], Min(4, GetSystemThreadCount()));
+  FFTW.Init(['','../', 'Plugins/', 'Includes/', 'Scripts/'], Min(4, GetSystemThreadCount()));
 
 
 end.

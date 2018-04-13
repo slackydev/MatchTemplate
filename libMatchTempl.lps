@@ -44,8 +44,7 @@
       <Unit0>
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="44" Y="10"/>
+        <CursorPos X="90" Y="22"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -248,9 +247,10 @@
       </Unit28>
       <Unit29>
         <Filename Value="fftlib\FFTW3.pas"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="157"/>
-        <CursorPos X="27" Y="171"/>
+        <TopLine Value="345"/>
+        <CursorPos X="15" Y="380"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit29>

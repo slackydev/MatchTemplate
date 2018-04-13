@@ -4,7 +4,7 @@
  For more info see: Copyright.txt
  Computes the local sum around the template size
 [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=}
-function Sums(a: T2DIntArray; out Square: T2DIntArray): T2DIntArray;
+function Sums(a: T2DIntArray; out Square: T2DI64Array): T2DIntArray;
 var
   x,y,W,H: Int32;
   sum,sqsum: Int64;
@@ -119,10 +119,10 @@ begin
   end;
 end;
 
+// ----------------------------------------------------------------------------
+// Sum, pad zeroes first col and row
 
-
-
-function SumsPd(a: T2DIntArray; out Square: T2DIntArray): T2DIntArray;
+function SumsPd(a: T2DIntArray; out Square: T2DI64Array): T2DI64Array;
 var
   x,y,W,H: Int32;
   sum,sqsum: Int64;

@@ -6,7 +6,7 @@
 [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=}
 // ----------------------------------------------------------------------------
 // Mean
-function Mean(a: T2DIntArray): Double; callconv
+function Mean(a: T2DIntArray): Double;
 var
   W,H,i,j:Int32;
   sum: Double;
@@ -18,7 +18,7 @@ begin
   Result := sum / (W*H);
 end; 
 
-function Mean(a: T2DSingleArray): Double; callconv
+function Mean(a: T2DSingleArray): Double;
 var
   W,H,i,j:Int32;
   sum: Double;
@@ -30,7 +30,7 @@ begin
   Result := sum / (W*H);
 end; 
 
-function Mean(a: T2DDoubleArray): Double; callconv
+function Mean(a: T2DDoubleArray): Double;
 var
   W,H,i,j:Int32;
   sum: Double;
@@ -46,7 +46,7 @@ end;
 // ----------------------------------------------------------------------------
 // Mean and Stdev at once
 
-procedure MeanStdev(a: T2DIntArray; out Mean, Stdev: Double); callconv
+procedure MeanStdev(a: T2DIntArray; out Mean, Stdev: Double);
 var
   W,H,i,j:Int32;
   sum, square: Extended;
@@ -63,10 +63,10 @@ begin
   Stdev := Sqrt(square / (W*H));
 end;
 
-procedure MeanStdev(a: T2DSingleArray; out Mean, Stdev: Single); callconv
+procedure MeanStdev(a: T2DSingleArray; out Mean, Stdev: Double);
 var
   W,H,i,j:Int32;
-  sum, square: Extended;
+  sum, square: Double;
 begin
   Size(a, W,H);
   sum := 0;
@@ -80,10 +80,10 @@ begin
   Stdev := Sqrt(square / (W*H));
 end;
 
-procedure MeanStdev(a: T2DDoubleArray; out Mean, Stdev: Double); callconv
+procedure MeanStdev(a: T2DDoubleArray; out Mean, Stdev: Double);
 var
   W,H,i,j:Int32;
-  sum, square: Extended;
+  sum, square: Double;
 begin
   Size(a, W,H);
   sum := 0;
@@ -100,7 +100,7 @@ end;
 // ----------------------------------------------------------------------------
 // Mean
 
-procedure MinMax(a: T2DIntArray; out vMin,vMax: Int32); callconv
+procedure MinMax(a: T2DIntArray; out vMin,vMax: Int32);
 var
   W,H,i,j:Int32;
 begin
@@ -114,7 +114,7 @@ begin
     end;
 end; 
 
-procedure MinMax(a: T2DSingleArray; out vMin,vMax: Single); callconv
+procedure MinMax(a: T2DSingleArray; out vMin,vMax: Single);
 var
   W,H,i,j:Int32;
 begin
@@ -128,7 +128,7 @@ begin
     end;
 end; 
 
-procedure MinMax(a: T2DDoubleArray; out vMin,vMax: Double); callconv
+procedure MinMax(a: T2DDoubleArray; out vMin,vMax: Double);
 var
   W,H,i,j:Int32;
 begin

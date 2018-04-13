@@ -3,7 +3,7 @@
  All rights reserved.
  Resize to M,N, padding happens before the items, rather than after
 [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=}
-function Squared(a: T2DIntArray): T2DIntArray; callconv
+function Squared(a: T2DIntArray): T2DIntArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);
@@ -12,7 +12,7 @@ begin
     for j:=0 to W-1 do Result[i,j] := Sqr(a[i,j]);
 end;  
 
-function Squared(a: T2DSingleArray): T2DSingleArray; callconv
+function Squared(a: T2DSingleArray): T2DSingleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);
@@ -21,7 +21,7 @@ begin
     for j:=0 to W-1 do Result[i,j] := Sqr(a[i,j]);
 end; 
 
-function Squared(a: T2DDoubleArray): T2DDoubleArray; callconv
+function Squared(a: T2DDoubleArray): T2DDoubleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);
@@ -33,7 +33,7 @@ end;
 // ----------------------------------------------------------
 // Square with Result being Double
 
-function SqrToDouble(a: T2DIntArray): T2DDoubleArray; callconv
+function SqrToDouble(a: T2DIntArray): T2DDoubleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);
@@ -42,7 +42,7 @@ begin
     for j:=0 to W-1 do Result[i,j] := Sqr(a[i,j]);
 end; 
 
-function SqrToDouble(a: T2DSingleArray): T2DDoubleArray; callconv
+function SqrToDouble(a: T2DSingleArray): T2DDoubleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);
@@ -51,7 +51,7 @@ begin
     for j:=0 to W-1 do Result[i,j] := Sqr(a[i,j]);
 end; 
 
-function SqrToDouble(a: T2DDoubleArray): T2DDoubleArray; callconv
+function SqrToDouble(a: T2DDoubleArray): T2DDoubleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, W,H);

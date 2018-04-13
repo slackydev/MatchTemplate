@@ -38,6 +38,11 @@ type
   TIntArray   = array of Int32;
   T2DIntArray = array of array of Int32;
 
+  TI64Array   = array of Int64;
+  T2DI64Array = array of array of Int64;
+
+  TStrArray = array of String;
+
   PBox = ^TBox;
   TBox = record X1,Y1,X2,Y2: Int32; end;
 

@@ -19,4 +19,6 @@
 {$DEFINE callconv :=
   {$IFDEF WINDOWS}{$IFDEF CPU32}cdecl;{$ELSE}{$ENDIF}{$ENDIF}
   {$IFDEF LINUX}{$IFDEF CPU32}cdecl;{$ELSE}{$ENDIF}{$ENDIF}
-}   
+}
+
+{$modeswitch advancedrecords}

@@ -1,4 +1,4 @@
-unit fftpack_core;
+unit FFTPACK4_core;
 {==============================================================================]
   fftpack.pas: A set of FFT routines in FPC
   Algorithmically based on Fortran-77 FFTPACK by Paul N. Swarztrauber (V4, 1985)
@@ -38,7 +38,7 @@ procedure rffti(n: Int32; wsave: RealArrayRef);
 implementation
 
 uses
-  math;
+  math; //used as a platform fallback
 
 {$IF FPC_VERSION < 3}
   {$IF Defined(CPU386)}  //"overload" for i386, so we get a float32 version

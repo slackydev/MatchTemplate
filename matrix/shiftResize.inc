@@ -3,7 +3,7 @@
  All rights reserved.
  Resize to M,N, padding happens before the items, rather than after
 [=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=}
-function ShiftResize(a: T2DIntArray; M,N: Int32): T2DIntArray; callconv
+function ShiftResize(a: T2DIntArray; M,N: Int32): T2DIntArray;
 var W,H,i,j:Int32;
 begin
   Size(a, w,h);
@@ -13,7 +13,7 @@ begin
       Result[i+M,j+N] := a[i,j];
 end;   
 
-function ShiftResize(a: T2DSingleArray; M,N: Int32): T2DSingleArray; callconv
+function ShiftResize(a: T2DSingleArray; M,N: Int32): T2DSingleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, w,h);
@@ -23,7 +23,7 @@ begin
       Result[i+M,j+N] := a[i,j];
 end;   
 
-function ShiftResize(a: T2DDoubleArray; M,N: Int32): T2DDoubleArray; callconv
+function ShiftResize(a: T2DDoubleArray; M,N: Int32): T2DDoubleArray;
 var W,H,i,j:Int32;
 begin
   Size(a, w,h);

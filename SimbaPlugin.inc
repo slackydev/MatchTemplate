@@ -38,23 +38,10 @@ begin
   AddType('TRealArray',   'array of TReal');
   AddType('T2DRealArray', 'array of TRealArray');
 
-  AddType('Complex',         'packed record re, im: TReal; end;');
-  AddType('TComplexArray',   'array of Complex');
-  AddType('T2DComplexArray', 'array of TComplexArray');
-
-  AddMethod(@MatchTemplate, 'function MatchTemplate(constref img, sub: T2DIntArray; maxThreads:Int32=-1): T2DRealArray;');
-
-  AddMethod(@fftpack.FFTInit, 'function FFTInit(n: Int32): TComplexArray;');
-  AddMethod(@fftpack.FFT,     'function FFT(a,wsave: TComplexArray; Inplace: LongBool = False): TComplexArray;');
-  AddMethod(@fftpack.IFFT,    'function IFFT(a,wsave: TComplexArray; Inplace: LongBool = False): TComplexArray;');
-
-  AddMethod(@fftpack.RFFTInit, 'function RFFTInit(n: Int32): TRealArray;');
-  AddMethod(@fftpack.RFFT,     'function RFFT(a,wsave: TRealArray; Inplace: LongBool = False): TRealArray;');
-  AddMethod(@fftpack.IRFFT,    'function IRFFT(a,wsave: TRealArray; Inplace: LongBool = False): TRealArray;');
-
-  AddMethod(@fftpack.FFT2,  'function FFT2(m: T2DComplexArray; Inplace: LongBool = False): T2DComplexArray;');
-  AddMethod(@fftpack.IFFT2, 'function IFFT2(m: T2DComplexArray; Inplace: LongBool = False): T2DComplexArray;');
-
+  AddType('ETMFormula', '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
+  
+  AddMethod(@MatchTemplate_Wrap, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula:ETMFormula=TM_CCOEFF_NORMED): T2DRealArray;');
+  
   MethodsLoaded := True;
   TypesLoaded := True;
 end;

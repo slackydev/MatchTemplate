@@ -57,7 +57,7 @@ begin
   // image helpers
   AddMethod(@expCompareImageAt, 'function T2DIntArray.CompareImageAt(Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; constref;');
   AddMethod(@expDownscaleImage, 'function T2DIntArray.DownscaleImage(Scale: Int32): T2DIntArray; constref;');
-  AddMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand: LongBool; Smooth: LongBool=True): T2DIntArray; constref;');
+  AddMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand, Smooth: LongBool): T2DIntArray; constref;');
   AddMethod(@expCrop,           'function T2DIntArray.Crop(B: TBox): T2DIntArray; constref;');
 
   MethodsLoaded := True;

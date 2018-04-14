@@ -58,7 +58,7 @@ function expArgMax(constref a: T2DRealArray): TPoint; callconv
 function expNormMinMax(constref a: T2DRealArray; Alpha, Beta: TReal): T2DRealArray; callconv
          begin Result := NormMinMax(a, Alpha, Beta); end;
 
-function expCompareImageAt(constref Image, Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; callconv
+function expCompareImageAt(constref Image: T2DIntArray; Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; callconv
          begin Result := CompareImageAt(Image, Templ, Pt, Tol); end;
 
 function expDownscaleImage(constref Image: T2DIntArray; Scale: Int32): T2DIntArray; callconv

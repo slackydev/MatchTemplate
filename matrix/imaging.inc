@@ -25,7 +25,8 @@ var
   c1,c2:TRGB32;
 begin
   Size(Templ, W,H);
-  
+  if (W = 0) or (H = 0) then Exit(1);
+
   SAD := 0;
   for y:=0 to h-1 do
     for x:=0 to w-1 do

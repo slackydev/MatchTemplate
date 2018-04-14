@@ -45,7 +45,7 @@
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
         <TopLine Value="37"/>
-        <CursorPos X="167" Y="50"/>
+        <CursorPos X="26" Y="62"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -58,7 +58,7 @@
         <Filename Value="SimbaPlugin.inc"/>
         <EditorIndex Value="2"/>
         <TopLine Value="35"/>
-        <CursorPos X="69" Y="59"/>
+        <CursorPos X="50" Y="51"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -140,8 +140,7 @@
       <Unit14>
         <Filename Value="matrix\matrix.pas"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="2"/>
-        <CursorPos X="10" Y="22"/>
+        <CursorPos X="10" Y="21"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit14>
@@ -287,8 +286,8 @@
         <Filename Value="matrix\imaging.inc"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="40"/>
-        <CursorPos X="32" Y="62"/>
+        <TopLine Value="16"/>
+        <CursorPos X="14" Y="31"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit35>
@@ -305,7 +304,7 @@
         <UsageCount Value="10"/>
       </Unit37>
     </Units>
-    <JumpHistory Count="25" HistoryIndex="24">
+    <JumpHistory Count="27" HistoryIndex="26">
       <Position1>
         <Filename Value="libMatchTempl.lpr"/>
         <Caret Line="23" Column="27"/>
@@ -406,6 +405,14 @@
         <Filename Value="libMatchTempl.lpr"/>
         <Caret Line="50" Column="167" TopLine="37"/>
       </Position25>
+      <Position26>
+        <Filename Value="SimbaPlugin.inc"/>
+        <Caret Line="51" Column="50" TopLine="35"/>
+      </Position26>
+      <Position27>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="62" Column="26" TopLine="37"/>
+      </Position27>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

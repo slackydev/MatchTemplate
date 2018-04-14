@@ -48,6 +48,9 @@ type
 
   PPoint = ^TPoint;
   TPoint = packed record X,Y: Int32; end;
+  TPointArray = array of TPoint;
+
+  TRGB32 = packed record B,G,R,A: Byte; end;
 
 function NextPow2(n: Int32): Int32; inline;
 function ParamArray(arr: array of Pointer): TParamArray;

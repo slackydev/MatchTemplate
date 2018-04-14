@@ -40,11 +40,12 @@
         </CompilerOptions>
       </Item1>
     </BuildModes>
-    <Units Count="35">
+    <Units Count="38">
       <Unit0>
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="90" Y="22"/>
+        <TopLine Value="37"/>
+        <CursorPos X="167" Y="50"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -55,9 +56,9 @@
       </Unit1>
       <Unit2>
         <Filename Value="SimbaPlugin.inc"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="25"/>
-        <CursorPos X="38" Y="50"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="35"/>
+        <CursorPos X="69" Y="59"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit2>
@@ -70,7 +71,7 @@
       </Unit3>
       <Unit4>
         <Filename Value="header.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="1"/>
         <CursorPos X="30" Y="24"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
@@ -78,11 +79,10 @@
       <Unit5>
         <Filename Value="threading.pas"/>
         <UnitName Value="Threading"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="49"/>
         <CursorPos X="8" Y="68"/>
         <UsageCount Value="95"/>
-        <Loaded Value="True"/>
       </Unit5>
       <Unit6>
         <Filename Value="misc.pas"/>
@@ -106,11 +106,10 @@
       </Unit8>
       <Unit9>
         <Filename Value="core.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="79"/>
-        <CursorPos X="41" Y="110"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="30"/>
+        <CursorPos X="32" Y="52"/>
         <UsageCount Value="83"/>
-        <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="matrix\localsum.inc"/>
@@ -121,11 +120,10 @@
       </Unit10>
       <Unit11>
         <Filename Value="matrix\stats.inc"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="163"/>
         <CursorPos X="17" Y="190"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit11>
       <Unit12>
         <Filename Value="matrix\size.inc"/>
@@ -141,9 +139,9 @@
       </Unit13>
       <Unit14>
         <Filename Value="matrix\matrix.pas"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="24"/>
-        <CursorPos X="35" Y="44"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="2"/>
+        <CursorPos X="10" Y="22"/>
         <UsageCount Value="48"/>
         <Loaded Value="True"/>
       </Unit14>
@@ -225,34 +223,31 @@
       <Unit26>
         <Filename Value="matrix\sums.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="122"/>
-        <CursorPos X="66" Y="144"/>
+        <TopLine Value="103"/>
+        <CursorPos X="70" Y="124"/>
         <UsageCount Value="13"/>
       </Unit26>
       <Unit27>
         <Filename Value="matchTempl.pas"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="287"/>
-        <CursorPos X="2" Y="314"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="6"/>
+        <CursorPos X="25" Y="26"/>
         <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit27>
       <Unit28>
         <Filename Value="fftlib\FFTPACK4.pas"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="233"/>
         <CursorPos X="46" Y="269"/>
         <UsageCount Value="33"/>
-        <Loaded Value="True"/>
       </Unit28>
       <Unit29>
         <Filename Value="fftlib\FFTW3.pas"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="345"/>
-        <CursorPos X="15" Y="380"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="344"/>
+        <CursorPos X="70" Y="352"/>
         <UsageCount Value="33"/>
-        <Loaded Value="True"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\math.pp"/>
@@ -282,133 +277,135 @@
       </Unit33>
       <Unit34>
         <Filename Value="fftlib\FFTPACK4_core.pas"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="12"/>
-        <CursorPos X="22" Y="50"/>
-        <UsageCount Value="6"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="21"/>
+        <CursorPos X="3" Y="41"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="matrix\imaging.inc"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="40"/>
+        <CursorPos X="32" Y="62"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="matrix\crop.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="46" Y="51"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="matrix\getValues.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="63" Y="29"/>
+        <UsageCount Value="10"/>
+      </Unit37>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="304" Column="9" TopLine="289"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="23" Column="27"/>
       </Position1>
       <Position2>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="384" Column="68" TopLine="355"/>
+        <Caret Line="314" Column="12" TopLine="287"/>
       </Position2>
       <Position3>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="218" Column="15" TopLine="192"/>
+        <Caret Line="317" Column="3" TopLine="287"/>
       </Position3>
       <Position4>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="293" Column="25" TopLine="269"/>
+        <Caret Line="102" Column="15" TopLine="83"/>
       </Position4>
       <Position5>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="125" Column="18" TopLine="116"/>
+        <Caret Line="108" Column="5" TopLine="89"/>
       </Position5>
       <Position6>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="138" Column="27" TopLine="117"/>
+        <Caret Line="80" Column="12" TopLine="65"/>
       </Position6>
       <Position7>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="19" Column="34" TopLine="11"/>
+        <Caret Line="103" Column="44" TopLine="75"/>
       </Position7>
       <Position8>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="198" Column="10" TopLine="178"/>
+        <Caret Line="124" Column="27" TopLine="101"/>
       </Position8>
       <Position9>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="266" Column="10" TopLine="246"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="18" Column="8" TopLine="8"/>
       </Position9>
       <Position10>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="199" Column="21" TopLine="178"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="17" Column="32"/>
       </Position10>
       <Position11>
-        <Filename Value="threading.pas"/>
-        <Caret Line="2"/>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="41" TopLine="16"/>
       </Position11>
       <Position12>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="19" Column="11"/>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="44" Column="35" TopLine="24"/>
       </Position12>
       <Position13>
         <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="17" TopLine="2"/>
+        <Caret Line="43" Column="19" TopLine="17"/>
       </Position13>
       <Position14>
         <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="23" Column="27"/>
+        <Caret Line="49" Column="47" TopLine="17"/>
       </Position14>
       <Position15>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="314" Column="12" TopLine="287"/>
-      </Position15>
-      <Position16>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="317" Column="3" TopLine="287"/>
-      </Position16>
-      <Position17>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="102" Column="15" TopLine="83"/>
-      </Position17>
-      <Position18>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="108" Column="5" TopLine="89"/>
-      </Position18>
-      <Position19>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="80" Column="12" TopLine="65"/>
-      </Position19>
-      <Position20>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="103" Column="44" TopLine="75"/>
-      </Position20>
-      <Position21>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="124" Column="27" TopLine="101"/>
-      </Position21>
-      <Position22>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="18" Column="8" TopLine="8"/>
-      </Position22>
-      <Position23>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="17" Column="32"/>
-      </Position23>
-      <Position24>
-        <Filename Value="matrix\matrix.pas"/>
-        <Caret Line="41" TopLine="16"/>
-      </Position24>
-      <Position25>
-        <Filename Value="matrix\matrix.pas"/>
-        <Caret Line="44" Column="35" TopLine="24"/>
-      </Position25>
-      <Position26>
-        <Filename Value="matrix\stats.inc"/>
-        <Caret Line="92" Column="163" TopLine="71"/>
-      </Position26>
-      <Position27>
-        <Filename Value="matrix\stats.inc"/>
-        <Caret Line="194" Column="27" TopLine="163"/>
-      </Position27>
-      <Position28>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="43" Column="19" TopLine="17"/>
-      </Position28>
-      <Position29>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="49" Column="47" TopLine="17"/>
-      </Position29>
-      <Position30>
         <Filename Value="libMatchTempl.lpr"/>
         <Caret Line="46" Column="9" TopLine="26"/>
-      </Position30>
+      </Position15>
+      <Position16>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="44" Column="35" TopLine="24"/>
+      </Position16>
+      <Position17>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="25" Column="45" TopLine="5"/>
+      </Position17>
+      <Position18>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="68" Column="17" TopLine="36"/>
+      </Position18>
+      <Position19>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="26" Column="69"/>
+      </Position19>
+      <Position20>
+        <Filename Value="matrix\matrix.pas"/>
+        <Caret Line="37" Column="6" TopLine="17"/>
+      </Position20>
+      <Position21>
+        <Filename Value="fftlib\FFTPACK4_core.pas"/>
+        <Caret Line="50" Column="22" TopLine="12"/>
+      </Position21>
+      <Position22>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="314" Column="2" TopLine="287"/>
+      </Position22>
+      <Position23>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="217" Column="14" TopLine="192"/>
+      </Position23>
+      <Position24>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="67" Column="79" TopLine="37"/>
+      </Position24>
+      <Position25>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="50" Column="167" TopLine="37"/>
+      </Position25>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

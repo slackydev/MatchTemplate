@@ -23,7 +23,7 @@ uses
   math, matrix, threading, FFTPACK4, FFTW3;
 
 
-procedure InitMatrix(var a: T2DRealArray; H,W: Int32; InitValue:Int32);
+procedure InitMatrix(out a: T2DRealArray; H,W: Int32; InitValue:Int32);
 var
   x,y: Int32;
 begin

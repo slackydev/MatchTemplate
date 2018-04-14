@@ -42,7 +42,6 @@ begin
   end;
 end;
 
-
 function Sums(a: T2DSingleArray; out Square: T2DDoubleArray): T2DDoubleArray;
 var
   x,y,W,H: Int32;
@@ -122,7 +121,7 @@ end;
 // ----------------------------------------------------------------------------
 // Sum, pad zeroes first col and row
 
-function SumsPd(a: T2DIntArray; out Square: T2DI64Array): T2DI64Array;
+function SumsPd(a: T2DIntArray; out Square: T2DI64Array): T2DIntArray;
 var
   x,y,W,H: Int32;
   sum,sqsum: Int64;

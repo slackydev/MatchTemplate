@@ -154,6 +154,11 @@ begin
     end;
 end; 
 
+
+// ----------------------------------------------------------------------------
+// Various (TReal)
+
+
 function ArgMax(a: T2DRealArray): TPoint;
 var X,Y,W,H:Int32;
 begin

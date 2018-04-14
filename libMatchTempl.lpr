@@ -44,10 +44,10 @@ end;
 
 // export a couple of stats related method to work with template matching result
 function expMin(constref a: T2DRealArray): TReal; callconv
-         var _:TReal; begin MinMax(a, Result, _);  end;
+         var _:TReal; begin MinMax(a, Result, _); end;
 
 function expMax(constref a: T2DRealArray): TReal; callconv
-         var _:TReal; begin MinMax(a, _, Result);  end;
+         var _:TReal; begin MinMax(a, _, Result); end;
 
 function expArgMin(constref a: T2DRealArray): TPoint; callconv
          begin Result := ArgMin(a); end;
@@ -58,6 +58,17 @@ function expArgMax(constref a: T2DRealArray): TPoint; callconv
 function expNormMinMax(constref a: T2DRealArray; Alpha, Beta: TReal): T2DRealArray; callconv
          begin Result := NormMinMax(a, Alpha, Beta); end;
 
+function expCompareImageAt(constref Image, Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; callconv
+         begin Result := CompareImageAt(Image, Templ, Pt, Tol); end;
+
+function expDownscaleImage(constref Image: T2DIntArray; Scale: Int32): T2DIntArray; callconv
+         begin Result := DownscaleImage(Image, Scale); end;
+
+function expRotateImage(constref Image: T2DIntArray; Angle: Single; Expand, Smooth: LongBool): T2DIntArray; callconv
+         begin Result := RotateImage(Image, Angle, Expand, Smooth); end;
+
+function expCrop(constref a: T2DIntArray; B: TBox): T2DIntArray; callconv
+         begin Result := Crop(a, B); end;
 
 {$I SimbaPlugin.inc}
 

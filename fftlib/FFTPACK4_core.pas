@@ -13,6 +13,9 @@ unit FFTPACK4_core;
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+  
+  FFTPACK4_core.pas: A set of FFT routines in FPC
+  Algorithmically based on Fortran-77 FFTPACK by Paul N. Swarztrauber (V4, 1985)
 [==============================================================================}
 {$I header.inc}
 interface

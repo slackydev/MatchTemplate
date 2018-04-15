@@ -5,6 +5,8 @@ unit FFTPACK4_core;
   
   As the original fortran libraries are public domain, the FPC Fourier routines 
   in this file are hereby released to the public domain as well.
+  
+  Brought to Free Pascal by Jarl `slacky` Holta
 [==============================================================================}
 {$I header.inc}
 interface

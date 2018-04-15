@@ -1,21 +1,10 @@
 unit FFTPACK4_core;
 {==============================================================================]
-  Copyright © 2018, Jarl Krister Holta
-  
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  
   FFTPACK4_core.pas: A set of FFT routines in FPC
   Algorithmically based on Fortran-77 FFTPACK by Paul N. Swarztrauber (V4, 1985)
+  
+  As the original fortran libraries are public domain, the FPC Fourier routines 
+  in this file are hereby released to the public domain as well.
 [==============================================================================}
 {$I header.inc}
 interface

@@ -263,6 +263,7 @@ begin
     mR := Mean(tR); tR := nil;
     mG := Mean(tG); tG := nil;
     mB := Mean(tB); tB := nil;
+    tplSigma := 0;
   end else
   begin
     MeanStdev(tR, mR, sR); tR := nil;

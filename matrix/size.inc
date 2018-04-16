@@ -47,3 +47,47 @@ begin
   if H > 0 then  W := Length(a[0])
   else           W := 0;
 end;
+
+// ----------------------------------------------------------------------------
+//
+
+function Area(a: T2DIntArray): Int32;
+var H: Int32;
+begin
+  H := Length(a);
+  if H > 0 then  Result := H*Length(a[0])
+  else           Result := 0;
+end;
+
+function Area(a: T2DI64Array): Int32;
+var H: Int32;
+begin
+  H := Length(a);
+  if H > 0 then  Result := H*Length(a[0])
+  else           Result := 0;
+end;
+
+function Area(a: T2DSingleArray): Int32;
+var H: Int32;
+begin
+  H := Length(a);
+  if H > 0 then  Result := H*Length(a[0])
+  else           Result := 0;
+end;
+
+function Area(a: T2DDoubleArray): Int32;
+var H: Int32;
+begin
+  H := Length(a);
+  if H > 0 then  Result := H*Length(a[0])
+  else           Result := 0;
+end;
+
+function Area(a: T2DComplexArray): Int32;
+var H: Int32;
+begin
+  H := Length(a);
+  if H > 0 then  Result := H*Length(a[0])
+  else           Result := 0;
+end;
+

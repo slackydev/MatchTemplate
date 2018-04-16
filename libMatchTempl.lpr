@@ -17,7 +17,7 @@ library libMatchTempl;
 {$I header.inc}
 
 uses
-  SysUtils, Math, core, matchTempl, matrix, FFTW3, FFTPACK4, threading;
+  SysUtils, Math, core, matchTempl, matrix, FFTW3, FFTPACK4, cpuinfo;
 
 function MatchTemplate_Wrap(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray; callconv
 begin

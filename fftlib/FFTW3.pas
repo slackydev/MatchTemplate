@@ -98,7 +98,7 @@ var
 implementation
 
 uses
-  Math, matrix, threading;
+  Math, matrix, cpuinfo;
 
 
 const

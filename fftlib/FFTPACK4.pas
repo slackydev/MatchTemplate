@@ -54,7 +54,7 @@ var
 implementation
 
 uses
-  Math, matrix, threading;
+  Math, matrix, threading, cpuinfo;
 
 
 const
@@ -217,7 +217,7 @@ end;
 // --------------------------------------------------------------------------------
 // 2d complex fft (supports threading)
 
-procedure __fft2_thread(params: PParamArray);
+procedure Parallel_FFT2(params: PParamArray; iLow, iHigh: Int32);
 var
   y: Int32;
   data: T2DComplexArray;
@@ -228,11 +228,11 @@ begin
 
   {if not inverse}
   if not PBoolean(Params^[2])^ then
-    for y:=PBox(Params^[3])^.y1 to PBox(Params^[3])^.y2 do
+    for y:=iLow to iHigh do
       FFTPACK.FFT(data[y], plan, True)
   {if inverse}
   else
-    for y:=PBox(Params^[3])^.y1 to PBox(Params^[3])^.y2 do
+    for y:=iLow to iHigh do
       FFTPACK.IFFT(data[y], plan, True);
 end;
 
@@ -240,22 +240,19 @@ function TFFTPACK.FFT2MT(m: T2DComplexArray; Inverse: Boolean): T2DComplexArray;
 var
   W,H,tc: Int32;
   plan: TComplexArray;
-  ThreadPool: TThreadPool;
 begin
   tc := Self.MaxThreads;
-  ThreadPool := TThreadPool.Create(tc);
 
   Size(m, W,H);
   plan := InitFFT(W);
-  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @inverse], W,H, tc, Self.MinThreadingSize);
+  ThreadPool.DoParallel(@Parallel_FFT2, [@m, @plan, @inverse], 0,H-1, tc, Area(m) < Self.MinThreadingSize);
 
   m := Rot90(m);
   Size(m, W,H);
   plan := InitFFT(W);
-  ThreadPool.MatrixFunc(@__fft2_thread, [@m, @plan, @inverse], W,H, tc, Self.MinThreadingSize);
+  ThreadPool.DoParallel(@Parallel_FFT2, [@m, @plan, @inverse], 0,H-1, tc, Area(m) < Self.MinThreadingSize);
 
   Result := Rot90(m);
-  ThreadPool.Free();
 end;
 
 

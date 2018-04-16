@@ -15,7 +15,7 @@
 [==============================================================================}
 procedure SplitRGB(Image: T2DIntArray; out R,G,B: T2DRealArray);
 var
-  W,H,x,y:Int32;
+  W,H,x,y: Int32;
 begin
   Size(Image, W,H);
   SetLength(R, H,W);
@@ -31,8 +31,8 @@ end;
 
 function CompareImageAt(Image, Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single;
 var
-  x,y,w,h,SAD:Int32;
-  c1,c2:TRGB32;
+  x,y,w,h,SAD: Int32;
+  c1,c2: TRGB32;
 begin
   Size(Templ, W,H);
   if (W = 0) or (H = 0) then Exit(1);
@@ -239,4 +239,80 @@ begin
     Result := __RotateBI(Image, Angle, Expand)
   else
     Result := __RotateNN(Image, Angle, Expand);
+end;
+
+
+function SobelMag(a: T2DIntArray): T2DRealArray;
+var
+  W,H,x,y: Int32;
+  dx,dy: TReal;
+  r,g,b: T2DRealArray;
+begin
+  W := High(a[0]);
+  H := High(a);
+  SetLength(Result, H+1,W+1);
+  SplitRGB(a, r,g,b);
+
+  for y:=1 to H-1 do
+    for x:=1 to W-1 do
+    begin
+      dx := (-1 * r[y-1,x-1]) + (-2 * r[y-1,x+0]) + (-1 * r[y-1,x+1]) + (+1 * r[y+1,x-1]) + (+2 * r[y+1,x+0]) + (+1 * r[y+1,x+1]);
+      dy := (-1 * r[y-1,x-1]) + (+1 * r[y-1,x+1]) + (-2 * r[y+0,x-1]) + (+2 * r[y+0,x+1]) + (-1 * r[y+1,x-1]) + (+1 * r[y+1,x+1]);
+      dx += (-1 * g[y-1,x-1]) + (-2 * g[y-1,x+0]) + (-1 * g[y-1,x+1]) + (+1 * g[y+1,x-1]) + (+2 * g[y+1,x+0]) + (+1 * g[y+1,x+1]);
+      dy += (-1 * g[y-1,x-1]) + (+1 * g[y-1,x+1]) + (-2 * g[y+0,x-1]) + (+2 * g[y+0,x+1]) + (-1 * g[y+1,x-1]) + (+1 * g[y+1,x+1]);
+      dx += (-1 * b[y-1,x-1]) + (-2 * b[y-1,x+0]) + (-1 * b[y-1,x+1]) + (+1 * b[y+1,x-1]) + (+2 * b[y+1,x+0]) + (+1 * b[y+1,x+1]);
+      dy += (-1 * b[y-1,x-1]) + (+1 * b[y-1,x+1]) + (-2 * b[y+0,x-1]) + (+2 * b[y+0,x+1]) + (-1 * b[y+1,x-1]) + (+1 * b[y+1,x+1]);
+
+      Result[y,x] := Sqrt(Sqr(dx) + Sqr(dy));
+    end;
+end;
+
+
+// slower than I thought.. just leaving it here as a reminder
+function SumXCorr(Image, Templ: T2DIntArray; Steps:Int32): T2DRealArray;
+var
+  invSize, wndR,wndG,wndB, tplR,tplG,tplB,res: Double;
+  ymin,ymax,h,x,y,aw,ah,tw,th: Int32;
+  aR,aG,aB, tR,tG,tB: T2DRealArray;
+  sumAR,sumAG,sumAB,sumTR,sumTG,sumTB,_: T2DDoubleArray;
+begin
+  SplitRGB(Image, ar,ag,ab);
+  SplitRGB(Templ, tr,tg,tb);
+
+  sumAR := SumsPd(aR, _); ar := nil;
+  sumAG := SumsPd(aG, _); ag := nil;
+  sumAB := SumsPd(aB, _); ab := nil;
+
+  Size(Templ, tw,th);
+  Size(Image, aw,ah);
+  invSize := Double(1.0) / Double(th*tw*3.0);
+
+  sumTR := SumsPd(tR, _); tr := nil;
+  sumTG := SumsPd(tG, _); tg := nil;
+  sumTB := SumsPd(tB, _); tb := nil;
+
+  SetLength(Result, ah,aw);
+  h := th div steps;
+  for y:=0 to ah-th do
+    for x:=0 to aw-tw do
+    begin
+      ymin := 0;
+      res  := 0.0;
+      while ymin+h <= th do
+      begin
+        ymax := ymin+h;
+        wndR := sumAR[Y+ymin,X] - sumAR[Y+ymin,X+tw] - sumAR[Y+ymax,X] + sumAR[Y+ymax,X+tw];
+        wndG := sumAG[Y+ymin,X] - sumAG[Y+ymin,X+tw] - sumAG[Y+ymax,X] + sumAG[Y+ymax,X+tw];
+        wndB := sumAB[Y+ymin,X] - sumAB[Y+ymin,X+tw] - sumAB[Y+ymax,X] + sumAB[Y+ymax,X+tw];
+
+        tplR := sumTR[ymin,0] - sumTR[ymin,tw] - sumTR[ymax,0] + sumTR[ymax,tw];
+        tplG := sumTG[ymin,0] - sumTG[ymin,tw] - sumTG[ymax,0] + sumTG[ymax,tw];
+        tplB := sumTB[ymin,0] - sumTB[ymin,tw] - sumTB[ymax,0] + sumTB[ymax,tw];
+
+        res += Abs(tplR - wndR) + Abs(tplG - wndG) + Abs(tplB - wndB);
+        Inc(ymin,h);
+      end;
+      Result[y,x] := res * invSize;
+    end;
+  SetLength(Result, ah-th+1, aw-tw+1);
 end;

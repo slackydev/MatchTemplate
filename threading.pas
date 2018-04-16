@@ -19,31 +19,31 @@ unit Threading;
 {$inline on}
 interface
 uses
-  {$IFDEF UNIX}cthreads, cmem,{$ENDIF}
   SysUtils, Classes, core;
 
 type
-  TThreadMethod = procedure(params: PParamArray);
+  TThreadMethod = procedure(Params: PParamArray; iLow, iHigh: Int32);
   TThreadId = Int32;
-  
+
+  EThreadState = (tsSleeping, tsAwaiting, tsWorking, tsReady);
+
   TExecThread = class(TThread)
   protected
     FMethod: TThreadMethod;
     FParams: TParamArray;
+    FRangeLo, FRangeHi: Int32;
+
     procedure Execute; override;
   public
-    Executed: Boolean;
+    State: EThreadState;
+
     constructor Create();
     procedure SetMethod(Method: TThreadMethod); inline;
     procedure SetArgument(argId:Int32; arg:Pointer); inline;
+    procedure SetRange(Low, High: Int32); inline;
   end;
   
-  TThreadArray = array of record
-    Thread: TExecThread;
-    Available: Boolean;
-    Initialized: Boolean;
-  end;
-
+  TThreadArray = array of TExecThread;
 
   TThreadPool = class(TObject)
     FMaxThreads: SizeInt;
@@ -52,89 +52,50 @@ type
     constructor Create(MaxThreads: SizeInt);
     destructor Free();
 
-    function GetAvailableThread(): TThreadId;
-    function  NewThread(method: TThreadMethod): TThreadId;
-    procedure SetArgument(t:TThreadId; argId:Int32; arg:Pointer); inline;
-    procedure SetArguments(t:TThreadId; args:array of Pointer);
-    procedure Start(t:TThreadId);
-    function  Executed(t:TThreadId): Boolean; inline;
-    procedure Release(t:TThreadId);
+    function  FindAvailableThread(): TThreadId; inline;
+    function  NewThread(method: TThreadMethod): TThreadId; inline;
+    procedure SetArgument(t: TThreadId; argId: Int32; arg: Pointer); inline;
+    procedure SetArguments(t: TThreadId; args: array of Pointer); {inline;}
+    procedure SetRange(t: TThreadId; Low, High: Int32); inline;
 
-    procedure MatrixFunc(Method:TThreadMethod; Args: array of Pointer; W,H:Int32; nThreads:UInt8; fallback:Int32=64*64);
-    procedure TestMatrixFunc(Method:TThreadMethod; Args: array of Pointer; W,H:Int32; nThreads:UInt8);
+    procedure Start(t: TThreadId);
+    function  Executed(t: TThreadId): Boolean; inline;
+
+    procedure DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; fallback: Boolean=False);
   end;
 
-function GetSystemThreadCount(): Int32;
+var
+  ThreadPool: TThreadPool;
 
 //--------------------------------------------------
 implementation
 
-{$IFDEF LINUX}{$linklib c}{$ENDIF}
-
 uses
-  {$IF defined(WINDOWS)}Windows,
-  {$ELSEIF defined(freebsd) or defined(darwin)}ctypes,sysctl,
-  {$ELSEIF LINUX}ctypes,{$ENDIF}
   Math;
-
-function GetSystemThreadCount(): Int32;
-{$IF Defined(WINDOWS)}
-var
-  i: Integer;
-  ProcessAffinityMask, SystemAffinityMask: DWORD_PTR;
-  Mask: DWORD;
-  SystemInfo: SYSTEM_INFO;
-begin
-  if GetProcessAffinityMask(GetCurrentProcess, ProcessAffinityMask, SystemAffinityMask)
-  then begin
-    Result := 0;
-    for i := 0 to 31 do begin
-      Mask := DWord(1) shl i;
-      if (ProcessAffinityMask and Mask) <> 0 then
-        Inc(Result);
-    end;
-  end else begin
-    //can't get the affinity mask so we just report the total number of processors
-    GetSystemInfo(SystemInfo);
-    Result := SystemInfo.dwNumberOfProcessors;
-  end;
-end;
-{$ELSEIF Defined(freebsd) OR Defined(darwin)}
-var
-  mib: array[0..1] of cint;
-  len: cint;
-  t: cint;
-begin
-  mib[0] := CTL_HW;
-  mib[1] := HW_NCPU;
-  len := SizeOf(t);
-  fpsysctl(pchar(@mib), 2, @t, @len, Nil, 0);
-  Result:=t;
-end;
-{$ELSEIF Defined(linux)}
-function SysConf(i: cint): clong; cdecl; external name 'sysconf';
-begin
-  Result := SysConf(83);
-end;
-{$ELSE}
-begin
-  Result := 1;
-end;
-{$ENDIF}
 
 
 (*----| WorkThread |----------------------------------------------------------*)
 constructor TExecThread.Create();
 begin
   FreeOnTerminate := True;
-  Executed := False;
-  inherited Create(True, 1*1024*1024);
+  State := tsSleeping;
+  inherited Create(False, 1024*1024);
 end;
 
-procedure TExecThread.Execute;
+procedure TExecThread.Execute();
+label startloc;
 begin
-  FMethod(@FParams);
-  Executed := True;
+  startloc:
+
+  Self.Priority := tpIdle;
+  while (Self.State <> tsReady) do Sleep(1);
+  Self.Priority := tpNormal;
+
+  State := tsWorking;
+  FMethod(@FParams, FRangeLo, FRangeHi);
+  State := tsSleeping;
+
+  goto startloc;
 end;
 
 procedure TExecThread.SetMethod(Method: TThreadMethod);
@@ -147,6 +108,12 @@ begin
   Self.FParams[argId] := arg;
 end;
 
+procedure TExecThread.SetRange(Low, High: Int32);
+begin
+  FRangeLo := Low;
+  FRangeHi := High;
+end;
+
 
 (*----| ThreadPool |----------------------------------------------------------*)
 constructor TThreadPool.Create(MaxThreads:SizeInt);
@@ -155,143 +122,115 @@ begin
   Self.FMaxThreads := MaxThreads;
   SetLength(self.FThreads, FMaxThreads);
   for i:=0 to High(self.FThreads) do
-  begin
-    self.FThreads[i].Available   := True;
-    self.FThreads[i].Initialized := False;
-  end;
+    self.FThreads[i] := TExecThread.Create();
 end;
 
 destructor TThreadPool.Free();
 var i:Int32;
 begin
   for i:=0 to High(self.FThreads) do
-    self.Release(i);
+  begin
+    if self.FThreads[i] <> nil then
+    begin
+      self.FThreads[i].Terminate();
+      self.FThreads[i] := nil;
+    end;
+  end;
 end;
 
-function TThreadPool.GetAvailableThread(): TThreadId;
+function TThreadPool.FindAvailableThread(): TThreadId;
 var i:Int32;
 begin
-  for i:=0 to High(self.FThreads) do
-    if self.FThreads[i].Available then
-      Exit(TThreadId(i));
-  raise Exception.Create('TThreadPool.GetAvailableThread: No free execution threads'); 
+  while True do
+  begin
+    for i:=0 to High(self.FThreads) do
+      if (self.FThreads[i].State = tsSleeping) then
+        Exit(TThreadId(i));
+    Sleep(0);
+ end;
 end;
 
 function TThreadPool.NewThread(method: TThreadMethod): TThreadId;
 begin
-  result := GetAvailableThread();
-  if self.FThreads[result].Thread <> nil then
-    Self.Release(result);
-
-  self.FThreads[result].Thread := TExecThread.Create();
-  self.FThreads[result].Available := False;
-  self.FThreads[result].Thread.SetMethod(method);
+  Result := FindAvailableThread();
+  self.FThreads[result].State := tsAwaiting;
+  self.FThreads[result].SetMethod(method);
 end;
 
-procedure TThreadPool.SetArgument(t:TThreadId; argid:Int32; arg:Pointer);
+procedure TThreadPool.SetArgument(t: TThreadId; argid: Int32; arg: Pointer);
 begin
-  self.FThreads[t].Thread.SetArgument(argid, arg);
+  self.FThreads[t].SetArgument(argid, arg);
 end;
 
-procedure TThreadPool.SetArguments(t:TThreadId; args:array of Pointer);
+procedure TThreadPool.SetArguments(t: TThreadId; args: array of Pointer);
 var arg:Int32;
 begin
   for arg:=0 to High(args) do
-    self.FThreads[t].Thread.SetArgument(arg, args[arg]);
+    self.FThreads[t].SetArgument(arg, args[arg]);
 end;
 
-procedure TThreadPool.Start(t:TThreadId);
+procedure TThreadPool.SetRange(t: TThreadId; Low, High: Int32);
 begin
-  self.FThreads[t].Thread.Start;
+  self.FThreads[t].SetRange(Low, High);
 end;
 
-function TThreadPool.Executed(t:TThreadId): Boolean;
+procedure TThreadPool.Start(t: TThreadId);
 begin
-  if (self.FThreads[t].Thread = nil) or (self.FThreads[t].Available) then
-     Result := False
-  else
-    Result := self.FThreads[t].Thread.Executed = True;
+  self.FThreads[t].State := tsReady;
 end;
 
-procedure TThreadPool.Release(t:TThreadId);
+function TThreadPool.Executed(t: TThreadId): Boolean;
 begin
-  self.FThreads[t].Available := True;
-  if self.FThreads[t].Thread <> nil then
-  begin
-    self.FThreads[t].Thread.Terminate();
-    self.FThreads[t].Thread := nil;
-  end;
+  Result := self.FThreads[t].State = tsSleeping;
 end;
 
-(*----| Functions |----------------------------------------------------------*)
-procedure TThreadPool.MatrixFunc(Method:TThreadMethod; Args: array of Pointer; W,H:Int32; nThreads:UInt8; fallback:Int32=64*64);
+
+// -----------------------------------------------------------------------------
+// Functions
+
+procedure TThreadPool.DoParallel(Method:TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; fallback: Boolean=False);
 var
-  i,lo,hi,step: Int32;
-  thread: array of record id: TThreadId; box: TBox; end;
+  i,step,A,B: Int32;
+  thread: array of TThreadId;
   params: TParamArray;
-  area: TBox;
 begin
-  if (W*H < fallback) or (nThreads=1) then
+  if (fallback) or (nThreads=1) then
   begin
-    area := Box(0,0,W-1,H-1);
-    params := args;
-    params[length(args)] := @area;
-    Method(@params);
+    params := Args;
+    Method(@params, iLow, iHigh);
     Exit();
   end;
 
   nThreads := Max(1, nThreads);
   SetLength(thread, nThreads);
   
-  lo := 0;
-  step := (H-1) div nThreads; 
+  A := iLow;
+  step := Max(1, (iHigh+1) div nThreads);
+
   for i:=0 to nThreads-1 do
   begin
-    hi := Min(H-1, lo + step);
-    
-    thread[i].box := Box(0, lo, w-1, hi);
-    thread[i].id := Self.NewThread(Method);
-    Self.SetArguments(thread[i].id, Args);
-    Self.SetArgument(thread[i].id, length(args), @thread[i].box);
-    Self.Start(thread[i].id);
-	
-    if hi = H-1 then
+    B := Min(iHigh, A + step);
+
+    thread[i] := Self.NewThread(Method);
+    Self.SetArguments(thread[i], Args);
+    Self.SetRange(thread[i], A,B);
+    Self.Start(thread[i]);
+
+    if B = iHigh then
     begin
       nThreads := i+1;
       Break;
     end;
-    lo := hi + 1;
+    A := B + 1;
   end;
 
   for i:=0 to nThreads-1 do
-  begin
-    while not Self.Executed(thread[i].id) do Sleep(0);
-    Self.Release(thread[i].id);
-  end;
+    while not Self.Executed(thread[i]) do
+      Sleep(0);
 end;
 
-procedure TThreadPool.TestMatrixFunc(Method:TThreadMethod; Args: array of Pointer; W,H:Int32; nThreads:UInt8);
-var
-  i,lo,hi,step: Int32;
-  params: TParamArray;
-  area: TBox;
-begin
-  nThreads := Max(1, nThreads);
-  lo := 0;
-  step := (H-1) div nThreads;
-  for i:=0 to nThreads-1 do
-  begin
-    hi := Min(H-1, lo + step);
 
-    area := Box(0, lo, w-1, hi);
-    params := args;
-    params[length(args)] := @area;
-    Method(@params);
-
-    if hi = H-1 then Break;
-    lo := hi + 1;
-  end;
-end;
-
+initialization
+  ThreadPool := TThreadPool.Create(64);
 
 end.

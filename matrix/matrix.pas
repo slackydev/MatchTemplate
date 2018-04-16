@@ -27,10 +27,11 @@ procedure Size(a: T2DSingleArray; out W,H: Int32);
 procedure Size(a: T2DDoubleArray; out W,H: Int32);
 procedure Size(a: T2DComplexArray; out W,H: Int32);
 
-procedure SplitRGB(Image: T2DIntArray; out R,G,B: T2DRealArray);
-function CompareImageAt(Image, Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single;
-function DownscaleImage(Image: T2DIntArray; Scale: Int32): T2DIntArray;
-function RotateImage(Image: T2DIntArray; Angle: Single; Expand: Boolean; Smooth: Boolean=True): T2DIntArray;
+function Area(a: T2DIntArray): Int32;
+function Area(a: T2DI64Array): Int32;
+function Area(a: T2DSingleArray): Int32;
+function Area(a: T2DDoubleArray): Int32;
+function Area(a: T2DComplexArray): Int32;
 
 function Crop(a: T2DIntArray; B: TBox): T2DIntArray;
 function Crop(a: T2DSingleArray; B: TBox): T2DSingleArray;
@@ -69,17 +70,25 @@ function ArgMin(a: T2DRealArray): TPoint;
 function ArgMax(a: T2DRealArray): TPoint;
 function NormMinMax(a: T2DRealArray; Alpha, Beta: TReal): T2DRealArray;
 
+procedure SplitRGB(Image: T2DIntArray; out R,G,B: T2DRealArray);
+function CompareImageAt(Image, Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single;
+function DownscaleImage(Image: T2DIntArray; Scale: Int32): T2DIntArray;
+function RotateImage(Image: T2DIntArray; Angle: Single; Expand: Boolean; Smooth: Boolean=True): T2DIntArray;
+function SobelMag(a: T2DIntArray): T2DRealArray;
+function SumXCorr(Image, Templ: T2DIntArray; Steps:Int32): T2DRealArray;
+
+
 implementation
 
 uses
   Math;
 
 {$I size.inc}
-{$I imaging.inc}
 {$I crop.inc}
 {$I getValues.inc}
 {$I sums.inc}
 {$I rot90.inc}
 {$I stats.inc}
+{$I imaging.inc}
 
 end.

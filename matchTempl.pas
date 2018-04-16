@@ -24,13 +24,14 @@ uses
 type
   ETMFormula = (TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);
 
+
 function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
 
 
 implementation
 
 uses
-  math, matrix, threading, FFTPACK4, FFTW3;
+  math, matrix, threading, cpuinfo, FFTPACK4, FFTW3;
 
 
 procedure InitMatrix(out a: T2DRealArray; H,W: Int32; InitValue:Int32);
@@ -46,19 +47,17 @@ end;
 // --------------------------------------------------------------------------------
 // a * conj(b)
 
-procedure __mulSpectrumConj_thread(params: PParamArray);
+procedure Parallel_MulSpecConj(Params: PParamArray; iLow, iHigh: Int32);
 var
   x,y: Int32;
   a,b: T2DComplexArray;
-  box: TBox;
   re,im: TReal;
 begin
   a := T2DComplexArray(Params^[0]^);
   b := T2DComplexArray(Params^[1]^);
-  box := PBox(Params^[2])^;
 
-  for y:=box.y1 to box.y2 do
-    for x:=box.x1 to box.x2 do
+  for y:=iLow to iHigh do
+    for x:=0 to High(a[y]) do
       begin
         re := (a[y,x].re *  b[y,x].re) - (a[y,x].im * -b[y,x].im);
         im := (a[y,x].re * -b[y,x].im) + (a[y,x].im *  b[y,x].re);
@@ -69,16 +68,11 @@ end;
 
 function MulSpectrumConj(a,b: T2DComplexArray): T2DComplexArray;
 var
-  W,H,tc: Int32;
-  ThreadPool: TThreadPool;
+  tc: Int32;
 begin
+  Size(a,tc,tc);
   tc := GetSystemThreadCount div 2;
-  ThreadPool := TThreadPool.Create(tc);
-  H := Length(a);
-  if H = 0 then Exit;
-  W := Length(a[0]);
-  ThreadPool.MatrixFunc(@__mulSpectrumConj_thread, [@a,@b], W,H, tc, 300*300);
-  ThreadPool.Free();
+  ThreadPool.DoParallel(@Parallel_MulSpecConj, [@a,@b], Low(a), High(a), tc, Area(a) < 300*300);
   Result := b;
 end;
 
@@ -124,8 +118,58 @@ begin
   end;
 end;
 
+// ----------------------------------------------------------------------------
+// Cross correlation (coefficient) of single channel matrices
+
+function CCOEFF_1C(a,t: T2DRealArray; Normed: Boolean): T2DRealArray;
+var
+  x,y,tw,th,aw,ah: Int32;
+  invSize, numer, denom, tplSdv, tplMean, tplSigma, wndDiff, wndSum: Double;
+  xcorr: T2DRealArray;
+  sum, sum2: T2DDoubleArray;
+begin
+  xcorr := CCORR(a,t);
+  Size(t, tw,th);
+
+  invSize := Double(1.0) / Double(tw*th);
+  MeanStdev(t, tplMean, tplSdv);
+  tplSigma := tplSdv / Sqrt(invSize);
+
+  if tplSdv < 0.00001 then
+  begin
+    InitMatrix(Result, Length(xcorr), Length(xcorr[0]), 1);
+    Exit;
+  end;
+
+  sum := SumsPd(a, sum2);
+  Size(sum, aw,ah);
+  SetLength(Result, ah-th, aw-tw);
+  for y:=0 to ah-th-1 do
+    for x:=0 to aw-tw-1 do
+    begin
+      wndSum := sum[Y,X] - sum[Y,X+tw] - sum[Y+th,X] + sum[Y+th,X+tw];
+      numer  := xcorr[y,x] - (wndSum * tplMean);
+
+      if Normed then
+      begin
+        wndDiff := (sum2[Y,X] - sum2[Y,X+tw] - sum2[Y+th,X] + sum2[Y+th,X+tw]) - (Sqr(wndSum) * invSize);
+        if wndDiff < 0.1 then Continue; //shortcut - assume float error
+
+        denom := tplSigma * Sqrt(wndDiff);
+
+        if abs(numer) < denom then
+          Result[y,x] := numer / denom
+        else if abs(numer) < denom*1.25 then
+          if numer > 0 then Result[y,x] := 1 else Result[y,x] := -1;
+      end else
+        Result[y,x] := numer;
+    end;
+end;
+
+
 
 // ----------------------------------------------------------------------------
+// Cross correlation of R,G,B channels
 
 function CCORR_RGB_HELPER(Image, Templ: T2DIntArray; out aR,aG,aB, tR,tG,tB: T2DRealArray): T2DRealArray;
 var
@@ -147,11 +191,13 @@ begin
 end;
 
 
+// ----------------------------------------------------------------------------
+// [Normalized] cross correlation of R,G,B channels
 
 function CCORR_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
   x,y,tw,th,aw,ah: Int32;
-  invSize, numer, denom, tplSdv, tplMean, tplSigma, mR,sR, mG,sG, mB,sB, wndSum2: Double;
+  invSize, numer, denom, tplSdv, tplMean, tplSigma, mR,mG,mB, sR,sG,sB, wndSum2: Double;
   sum2r, sum2g, sum2b: T2DDoubleArray;
   xcorr, aR,aG,aB, tR,tG,tB: T2DRealArray;
 begin
@@ -194,6 +240,9 @@ begin
         if numer > 0 then Result[y,x] := 1 else Result[y,x] := -1;
     end;
 end;
+
+// ----------------------------------------------------------------------------
+// [Normalized] Cross correlation (coefficient) of R,G,B channels
 
 function CCOEFF_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
@@ -244,13 +293,14 @@ begin
       wndSumG  := sumG[Y,X] - sumG[Y,X+tw] - sumG[Y+th,X] + sumG[Y+th,X+tw];
       wndSumB  := sumB[Y,X] - sumB[Y,X+tw] - sumB[Y+th,X] + sumB[Y+th,X+tw];
 
-      wndMean2 := Sqr(wndSumR) + Sqr(wndSumG) + Sqr(wndSumB);
       numer    := xcorr[y,x] - ((wndSumR * mR) + (wndSumG * mG) + (wndSumB * mB));
       if Normed then
       begin
         wndSum2  := sum2r[Y,X] - sum2r[Y,X+tw] - sum2r[Y+th,X] + sum2r[Y+th,X+tw];
         wndSum2  += sum2g[Y,X] - sum2g[Y,X+tw] - sum2g[Y+th,X] + sum2g[Y+th,X+tw];
         wndSum2  += sum2b[Y,X] - sum2b[Y,X+tw] - sum2b[Y+th,X] + sum2b[Y+th,X+tw];
+
+        wndMean2 := Sqr(wndSumR) + Sqr(wndSumG) + Sqr(wndSumB);
         wndMean2 := wndMean2 * invSize;
 
         denom := tplSigma * Sqrt(Max(0, wndSum2 - wndMean2));
@@ -262,6 +312,9 @@ begin
         Result[y,x] := numer;
     end;
 end;
+
+// ----------------------------------------------------------------------------
+// [Normalized] square difference of R,G,B channels
 
 function SQDIFF_RGB(Image, Templ: T2DIntArray; Normed: Boolean): T2DRealArray;
 var
@@ -312,13 +365,30 @@ begin
 end;
 
 
-// ----------------------------------------------------------------------------
+// unused experimentation
+function CCOEFF_SOBEL_RGB(Image, Templ: T2DIntArray): T2DRealArray;
+var
+  x,y,w,h: Int32;
+  xc1,xc2: T2DRealArray;
+begin
+  xc1 := CCOEFF_1C(SobelMag(Image), SobelMag(Templ), True);
+  xc2 := CCOEFF_RGB(Image, Templ, True);
 
+  Size(xc1, w,h);
+  for y:=0 to H-1 do
+    for x:=0 to W-1 do
+      xc2[y,x] := 0.5 * (xc1[y,x] + xc2[y,x]);
+  Result := xc2;
+end;
+
+
+// ----------------------------------------------------------------------------
+// Template matching using some of the above formulas
 
 function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
 begin
   if FFTW.IsLoaded then
-    FFTW.PrepareThreads(Length(Image)*Length(Image[0]));
+    FFTW.PrepareThreads(Area(Image));
 
   case TMFormula of
     TM_CCORR:         Result := CCORR_RGB(Image, Templ, False);

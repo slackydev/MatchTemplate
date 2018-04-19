@@ -16,14 +16,14 @@ unit Threading;
 
   --
 
-  Standalone unit for basic parallel processing of arrays.
+  Standalone unit for basic parallel processing of arrays (needs cpuinfo).
 [==============================================================================}
 {$mode objfpc}{$H+}
 {$modeswitch advancedrecords}
 {$inline on}
 interface
 uses
-  {$ifdef unix}cthreads,cmem,{$endif}  // c memory manager can be notably faster on some platforms
+  {$ifdef unix}cthreads,cmem,{$endif} // c memory manager can be notably faster on some platforms
   SysUtils, Classes;
 
 type
@@ -76,7 +76,7 @@ var
 implementation
 
 uses
-  Math;
+  Math, cpuinfo;
 
 
 // ----------------------------------------------------------------------------
@@ -86,7 +86,7 @@ constructor TExecThread.Create();
 begin
   FreeOnTerminate := True;
   State := tsSleeping;
-  inherited Create(False, 1024*1024); //for this purpose the default stacksize was overkill
+  inherited Create(False, 1024*512); //default = 4MiB, we set 512KiB
 end;
 
 procedure TExecThread.Execute();
@@ -231,6 +231,7 @@ end;
 
 
 initialization
-  ThreadPool := TThreadPool.Create(64);
+  WriteLn('>>> Spawning ',GetSystemThreadCount(),' worker threads');
+  ThreadPool := TThreadPool.Create(GetSystemThreadCount());
 
 end.

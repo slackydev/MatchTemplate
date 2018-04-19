@@ -56,6 +56,8 @@ begin
   AddMethod(@DisableFFTW,        'procedure DisableFFTW();');
   AddMethod(@EnableFFTW,         'function  EnableFFTW(): LongBool');
   AddMethod(@SetMaxFFTThreads,   'procedure SetMaxFFTThreads(MaxThreads: Int32);');
+  AddMethod(@EnableFFTCache,     'procedure EnableFFTCache(Enabled: LongBool);');
+  AddMethod(@ClearFFTCache,      'procedure ClearFFTCache();');
 
   // stats helper methods
   AddMethod(@expMin,        'function T2DRealArray.Min(): TReal; constref;');

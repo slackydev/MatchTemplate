@@ -51,6 +51,16 @@ begin
   end;
 end;
 
+procedure EnableFFTCache(Enabled: LongBool); callconv
+begin
+  TM_USE_CACHE := Enabled;
+end;
+
+procedure ClearFFTCache(); callconv
+begin
+  ClearCache();
+end;
+
 
 // export a couple of stats related method to work with template matching result
 function expMin(constref a: T2DRealArray): TReal; callconv

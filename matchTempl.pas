@@ -24,15 +24,132 @@ uses
 type
   ETMFormula = (TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);
 
-
 function MatchTemplate(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray;
+procedure ClearCache();
 
+var TM_USE_CACHE: Boolean = True;
 
 implementation
 
 uses
   math, matrix, threading, cpuinfo, FFTPACK4, FFTW3;
 
+type
+  TRANSFORM_CACHE = record
+    W,H: Int32;
+    IsR2C: Boolean;
+    Data: T2DRealArray;
+    Spec: T2DComplexArray;
+  end;
+
+var
+  FFTCache: array [0..2] of TRANSFORM_CACHE;
+
+
+// --------------------------------------------------------------------------------
+// Cache
+
+procedure ClearCache();
+var i: Int32;
+begin
+  for i:=0 to High(FFTCache) do
+  begin
+    FFTCache[i].W := 0;
+    FFTCache[i].H := 0;
+    FFTCache[i].IsR2C := False;
+    SetLength(FFTCache[i].Data, 0);
+    SetLength(FFTCache[i].Spec, 0);
+  end;
+end;
+
+function TryGetSpec(Image: T2DRealArray; out Spec: T2DComplexArray; IsR2C: Boolean): Boolean;
+var
+  i,w,h: Int32;
+
+  function Equals(a,b: T2DRealArray): Boolean;
+  var x,y: Int32;
+  begin
+    Result := True;
+    for y:=0 to H-1 do
+      for x:=0 to W-1 do
+        if Abs(a[y,x]-b[y,x]) > 0.001 then Exit(False);
+  end;
+begin
+  Size(Image, W,H);
+  Result := False;
+
+  for i:=0 to High(FFTCache) do
+  begin
+    if (FFTCache[i].IsR2C <> IsR2C) then // R2C results can't be mixed with C2C
+      continue;
+
+    if (FFTCache[i].W <> W) or (FFTCache[i].H <> H) then
+      continue;
+
+    if not Equals(Image, FFTCache[i].Data) then
+      continue;
+
+    Spec := FFTCache[i].Spec;
+    Exit(True);
+  end;
+end;
+
+procedure Push2Cache(Data: T2DRealArray; Spec: T2DComplexArray; W,H: Int32; IsR2C: Boolean);
+var i: Int32;
+begin
+  for i:=High(FFTCache)-1 downto 0 do
+    FFTCache[i+1] := FFTCache[i];
+
+  FFTCache[0].Data  := Data;
+  FFTCache[0].Spec  := Spec;
+  FFTCache[0].IsR2C := IsR2C;
+  FFTCache[0].W := W;
+  FFTCache[0].H := H;
+end;
+
+
+// --------------------------------------------------------------------------------
+// Helpers
+
+function DoFFT2(I: T2DRealArray; outW, outH: Int32; UseCache: Boolean = False): T2DComplexArray;
+var
+  x,y,W,H: Int32;
+begin
+  if UseCache and TryGetSpec(I, Result, FFTW.IsLoaded) then
+    Exit(Result);
+
+  Size(I, W,H);
+  if FFTW.IsLoaded then
+  begin
+    SetLength(I, FFTW.OptimalDFTSize(outH), FFTW.OptimalDFTSize(outW));
+    Result := FFTW.FFT2_R2C(I);
+  end else
+  begin
+    SetLength(Result, FFTPACK.OptimalDFTSize(outH), FFTPACK.OptimalDFTSize(outW));
+    for y:=0 to H-1 do for x:=0 to W-1 do Result[y,x].re := I[y,x];
+    Result := FFTPACK.FFT2(Result);
+  end;
+
+  if UseCache then
+    Push2Cache(I, Result, W,H, FFTW.IsLoaded);
+end;
+
+function DoIFFT2(Spec: T2DComplexArray; outW, outH: Int32): T2DRealArray;
+var
+  x,y: Int32;
+begin
+  if FFTW.IsLoaded then
+  begin
+    Result := FFTW.FFT2_C2R(Spec);
+    SetLength(Result, outH, outW);
+  end else
+  begin
+    Spec := FFTPACK.IFFT2(Spec);
+    SetLength(Result, outH, outW);
+    for y:=0 to outH-1 do
+      for x:=0 to outW-1 do Result[y,x] := Spec[y,x].re;
+  end;
+end;
 
 procedure InitMatrix(out a: T2DRealArray; H,W: Int32; InitValue:Int32);
 var
@@ -50,30 +167,30 @@ end;
 procedure Parallel_MulSpecConj(Params: PParamArray; iLow, iHigh: Int32);
 var
   x,y: Int32;
-  a,b: T2DComplexArray;
+  a,b,r: T2DComplexArray;
   re,im: TReal;
 begin
   a := T2DComplexArray(Params^[0]^);
   b := T2DComplexArray(Params^[1]^);
-
+  r := T2DComplexArray(Params^[2]^);
   for y:=iLow to iHigh do
     for x:=0 to High(a[y]) do
       begin
         re := (a[y,x].re *  b[y,x].re) - (a[y,x].im * -b[y,x].im);
         im := (a[y,x].re * -b[y,x].im) + (a[y,x].im *  b[y,x].re);
-        b[y,x].re := re;
-        b[y,x].im := im;
+        r[y,x].re := re;
+        r[y,x].im := im;
       end;
 end;
 
 function MulSpectrumConj(a,b: T2DComplexArray): T2DComplexArray;
 var
-  tc: Int32;
+  tc,W,H: Int32;
 begin
-  Size(a,tc,tc);
+  Size(a,W,H);
   tc := GetSystemThreadCount div 2;
-  ThreadPool.DoParallel(@Parallel_MulSpecConj, [@a,@b], Low(a), High(a), tc, Area(a) < 300*300);
-  Result := b;
+  SetLength(Result, H,W);
+  ThreadPool.DoParallel(@Parallel_MulSpecConj, [@a,@b,@Result], Low(a), High(a), tc, Area(a) < 300*300);
 end;
 
 
@@ -82,40 +199,16 @@ end;
 
 function CCORR(Image, Templ: T2DRealArray): T2DRealArray;
 var
-  x,y,aw,ah,tw,th: Int32;
+  iw,ih,tw,th: Int32;
   a,b: T2DComplexArray;
 begin
-  Size(Image, aw,ah);
+  Size(Image, iw,ih);
   Size(Templ, tw,th);
 
-  if FFTW.IsLoaded then
-  begin
-    SetLength(Image, FFTW.OptimalDFTSize(aH), FFTW.OptimalDFTSize(aW));
-    SetLength(Templ, FFTW.OptimalDFTSize(aH), FFTW.OptimalDFTSize(aW));
-    a := FFTW.FFT2_R2C(Image);
-    b := FFTW.FFT2_R2C(Templ);
-  end else
-  begin
-    SetLength(a, FFTPACK.OptimalDFTSize(aH), FFTPACK.OptimalDFTSize(aW));
-    SetLength(b, FFTPACK.OptimalDFTSize(aH), FFTPACK.OptimalDFTSize(aW));
-    for y:=0 to ah-1 do for x:=0 to aw-1 do a[y,x].re := Image[y,x];
-    for y:=0 to th-1 do for x:=0 to tw-1 do b[y,x].re := Templ[y,x];
-    a := FFTPACK.FFT2(a);
-    b := FFTPACK.FFT2(b);
-  end;
-
+  a := DoFFT2(Image, iw,ih, TM_USE_CACHE);
+  b := DoFFT2(Templ, iw,ih);
   b := MulSpectrumConj(a,b);
-
-  if FFTW.IsLoaded then
-  begin
-    Result := FFTW.FFT2_C2R(b);
-    SetLength(Result, ah-th+1, aw-tw+1);
-  end else
-  begin
-    b := FFTPACK.IFFT2(b);
-    SetLength(Result, ah-th+1, aw-tw+1);
-    for y:=0 to ah-th do for x:=0 to aw-tw do Result[y,x] := b[y,x].re;
-  end;
+  Result := DoIFFT2(b, iw-tw+1, ih-th+1);
 end;
 
 // ----------------------------------------------------------------------------
@@ -403,5 +496,7 @@ begin
   end;
 end;
 
+initialization
+   ClearCache();
 
 end.

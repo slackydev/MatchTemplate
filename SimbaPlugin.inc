@@ -44,11 +44,10 @@ end;
 
 procedure LoadExports;
 begin
-  AddType('TReal',   {$IF SizeOf(TReal)=4}'Single'{$ELSE}'Double'{$ENDIF});
+  AddType('TReal', {$IF SizeOf(TReal)=4}'Single'{$ELSE}'Double'{$ENDIF});
   AddType('TRealArray',   'array of TReal');
   AddType('T2DRealArray', 'array of TRealArray');
-
-  AddType('ETMFormula', '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
+  AddType('ETMFormula',   '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
 
 
   AddMethod(@MatchTemplate_Wrap, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula:ETMFormula=TM_CCOEFF_NORMED): T2DRealArray;');

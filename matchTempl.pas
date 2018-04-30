@@ -65,8 +65,7 @@ end;
 function TryGetSpec(Image: T2DRealArray; out Spec: T2DComplexArray; IsR2C: Boolean): Boolean;
 var
   i,w,h: Int32;
-
-  function Equals(a,b: T2DRealArray): Boolean;
+  function Equals(a,b: T2DRealArray): Boolean; inline;
   var x,y: Int32;
   begin
     Result := True;

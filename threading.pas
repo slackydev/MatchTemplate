@@ -40,7 +40,6 @@ type
     FMethod: TThreadMethod;
     FParams: TParamArray;
     FRangeLo, FRangeHi: Int32;
-
     procedure Execute; override; // hide this method to avoid confusion
   public
     State: EThreadState;
@@ -52,22 +51,21 @@ type
     function Run(iLow, iHigh: Int32): Boolean;
     function Completed(): Boolean; inline;
   end;
-  
   TThreadArray = array of TExecThread;
 
   TThreadPool = class(TObject)
+  private
     FMaxThreads: SizeInt;
     FThreads: TThreadArray;
-
-    constructor Create(MaxThreads: SizeInt);
-    destructor Free();
-
     function  FindAvailableThread(): TThreadId; inline;
     function  PrepareThread(Method: TThreadMethod): TExecThread; inline;
-
-    procedure DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; fallback: Boolean=False);
+  public  
+    constructor Create(MaxThreads: SizeInt);
+    destructor Free();
+    procedure DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; Fallback: Boolean=False);
   end;
 
+ 
 var
   ThreadPool: TThreadPool;
 
@@ -184,12 +182,7 @@ begin
   Result.SetMethod(Method);
 end;
 
-
-
-// -----------------------------------------------------------------------------
-// Functions
-
-procedure TThreadPool.DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; fallback: Boolean=False);
+procedure TThreadPool.DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; Fallback: Boolean=False);
 var
   i,step,A,B: Int32;
   Thread: array of TExecThread;
@@ -204,7 +197,7 @@ begin
 
   nThreads := Max(1, nThreads);
   SetLength(thread, nThreads);
-  
+
   A := iLow;
   step := Max(1, (iHigh+1) div nThreads);
 

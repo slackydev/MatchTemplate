@@ -19,17 +19,16 @@ library libMatchTempl;
 uses
   SysUtils, Math, core, matchTempl, matrix, FFTW3, FFTPACK4, cpuinfo;
 
-function MatchTemplate_Wrap(constref Image, Templ: T2DIntArray; TMFormula: ETMFormula): T2DRealArray; callconv
-begin
-  Result := MatchTemplate(Image, Templ, TMFormula);
-end;
-
-function LoadFFTWFrom(constref Path: String): LongBool; callconv
+// -----------------------------------------------------------------------------
+// Complex data, FFI is not reliable here
+procedure LoadFFTWFrom(const Params: PParamArray; const Result:Pointer); callconv export;
 begin
   FFTW.Free();
-  Result := FFTW.Init([Path], Min(4, GetSystemThreadCount()));
+  LongBool(Result^) := FFTW.Init([AnsiString(Params^[0]^)], Min(4, GetSystemThreadCount()));
 end;
 
+// ----------------------------------------------------
+// Simple data, FFI is fine
 procedure SetMaxFFTThreads(MaxThreads: Int32); callconv
 begin
   FFTW.MaxThreads := MaxThreads;
@@ -62,33 +61,61 @@ begin
 end;
 
 
+// -----------------------------------------------------------------------------
 // export a couple of stats related method to work with template matching result
-function expMin(constref a: T2DRealArray): TReal; callconv
-         var _:TReal; begin MinMax(a, Result, _); end;
+// complex data, FFI is not fine.
 
-function expMax(constref a: T2DRealArray): TReal; callconv
-         var _:TReal; begin MinMax(a, _, Result); end;
+procedure expMatchTemplate(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  T2DRealArray(Result^) := MatchTemplate(T2DIntArray(Params^[0]^), T2DIntArray(Params^[1]^), ETMFormula(Params^[2]^));
+end;
 
-function expArgMin(constref a: T2DRealArray): TPoint; callconv
-         begin Result := ArgMin(a); end;
+procedure expMin(const Params: PParamArray; const Result:Pointer); callconv export;
+var _:TReal;
+begin
+  MinMax(T2DRealArray(Params^[0]^), TReal(Result^), _);
+end;
 
-function expArgMax(constref a: T2DRealArray): TPoint; callconv
-         begin Result := ArgMax(a); end;
+procedure expMax(const Params: PParamArray; const Result:Pointer); callconv export;
+var _:TReal;
+begin
+  MinMax(T2DRealArray(Params^[0]^), _, TReal(Result^));
+end;
 
-function expNormMinMax(constref a: T2DRealArray; Alpha, Beta: TReal): T2DRealArray; callconv
-         begin Result := NormMinMax(a, Alpha, Beta); end;
+procedure expArgMin(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  TPoint(Result^) := ArgMin(T2DRealArray(Params^[0]^));
+end;
 
-function expCompareImageAt(constref Image: T2DIntArray; Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; callconv
-         begin Result := CompareImageAt(Image, Templ, Pt, Tol); end;
+procedure expArgMax(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  TPoint(Result^) := ArgMax(T2DRealArray(Params^[0]^));
+end;
 
-function expDownscaleImage(constref Image: T2DIntArray; Scale: Int32): T2DIntArray; callconv
-         begin Result := DownscaleImage(Image, Scale); end;
+procedure expNormMinMax(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  T2DRealArray(Result^) := NormMinMax(T2DRealArray(Params^[0]^), TReal(Params^[1]^), TReal(Params^[2]^));
+end;
 
-function expRotateImage(constref Image: T2DIntArray; Angle: Single; Expand, Smooth: LongBool): T2DIntArray; callconv
-         begin Result := RotateImage(Image, Angle, Expand, Smooth); end;
+procedure expCompareImageAt(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  Single(Result^) := CompareImageAt(T2DIntArray(Params^[0]^), T2DIntArray(Params^[1]^), TPoint(Params^[2]^), Int32(Params^[2]^));
+end;
 
-function expCrop(constref a: T2DIntArray; B: TBox): T2DIntArray; callconv
-         begin Result := Crop(a, B); end;
+procedure expDownscaleImage(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  T2DIntArray(Result^) := DownscaleImage(T2DIntArray(Params^[0]^), Int32(Params^[1]^));
+end;
+
+procedure expRotateImage(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  T2DIntArray(Result^) := RotateImage(T2DIntArray(Params^[0]^), Single(Params^[1]^), LongBool(Params^[2]^), LongBool(Params^[3]^));
+end;
+
+procedure expCrop(const Params: PParamArray; const Result:Pointer); callconv export;
+begin
+  T2DIntArray(Result^) := Crop(T2DIntArray(Params^[0]^), TBox(Params^[1]^));
+end;
 
 {$I SimbaPlugin.inc}
 

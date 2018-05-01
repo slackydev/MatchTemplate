@@ -50,26 +50,28 @@ begin
   AddType('ETMFormula',   '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
 
 
-  AddMethod(@MatchTemplate_Wrap, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula:ETMFormula=TM_CCOEFF_NORMED): T2DRealArray;');
-  AddMethod(@LoadFFTWFrom,       'function  LoadFFTWFrom(constref Path: String): LongBool;');
+  AddMethod(@LoadFFTWFrom,       'function  LoadFFTWFrom(constref Path: String): LongBool; native;');
   AddMethod(@DisableFFTW,        'procedure DisableFFTW();');
   AddMethod(@EnableFFTW,         'function  EnableFFTW(): LongBool');
   AddMethod(@SetMaxFFTThreads,   'procedure SetMaxFFTThreads(MaxThreads: Int32);');
   AddMethod(@EnableFFTCache,     'procedure EnableFFTCache(Enabled: LongBool);');
   AddMethod(@ClearFFTCache,      'procedure ClearFFTCache();');
 
+  // match template
+  AddMethod(@expMatchTemplate, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula:ETMFormula=TM_CCOEFF_NORMED): T2DRealArray; native;');
+
   // stats helper methods
-  AddMethod(@expMin,        'function T2DRealArray.Min(): TReal; constref;');
-  AddMethod(@expMax,        'function T2DRealArray.Max(): TReal; constref;');
-  AddMethod(@expArgMin,     'function T2DRealArray.ArgMin(): TPoint; constref;');
-  AddMethod(@expArgMax,     'function T2DRealArray.ArgMax(): TPoint; constref;');
-  AddMethod(@expNormMinMax, 'function T2DRealArray.NormMinMax(A,B: TReal): T2DRealArray; constref;');
+  AddMethod(@expMin,        'function T2DRealArray.Min(): TReal; constref; native;');
+  AddMethod(@expMax,        'function T2DRealArray.Max(): TReal; constref; native;');
+  AddMethod(@expArgMin,     'function T2DRealArray.ArgMin(): TPoint; constref; native;');
+  AddMethod(@expArgMax,     'function T2DRealArray.ArgMax(): TPoint; constref; native;');
+  AddMethod(@expNormMinMax, 'function T2DRealArray.NormMinMax(A,B: TReal): T2DRealArray; constref; native;');
 
   // image helpers
-  AddMethod(@expCompareImageAt, 'function T2DIntArray.CompareImageAt(Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; constref;');
-  AddMethod(@expDownscaleImage, 'function T2DIntArray.DownscaleImage(Scale: Int32): T2DIntArray; constref;');
-  AddMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand, Smooth: LongBool): T2DIntArray; constref;');
-  AddMethod(@expCrop,           'function T2DIntArray.Crop(B: TBox): T2DIntArray; constref;');
+  AddMethod(@expCompareImageAt, 'function T2DIntArray.CompareImageAt(Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; constref; native;');
+  AddMethod(@expDownscaleImage, 'function T2DIntArray.DownscaleImage(Scale: Int32): T2DIntArray; constref; native;');
+  AddMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand, Smooth: LongBool): T2DIntArray; constref; native;');
+  AddMethod(@expCrop,           'function T2DIntArray.Crop(B: TBox): T2DIntArray; constref; native;');
 
   MethodsLoaded := True;
   TypesLoaded := True;

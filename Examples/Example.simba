@@ -35,7 +35,7 @@ begin
 
   bmp.Init(client.GetMBitmaps);
   sub.Init(client.GetMBitmaps);
-  bmp.CopyClientToBitmap(client.GetIOManager, True, 0,0, W div 2, H div 2);
+  bmp.CopyClientToBitmap(client.GetIOManager, True, 0,0, Round(W * 0.75), Round(H * 0.75));
   sub.CopyClientToBitmap(client.GetIOManager, True, 100,100, 399, 399);
   
   xcorr := MatchTemplate(bmp.ToMatrix(), sub.ToMatrix());

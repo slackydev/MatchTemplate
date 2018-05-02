@@ -22,7 +22,7 @@ function sysconf(i: cint): clong; cdecl; external name 'sysconf';
 {$ENDIF}
  
  
-function GetSystemThreadCount: integer;
+function GetSystemThreadCount: Integer;
 // returns a good default for the number of threads on this system
 {$IF defined(windows)}
 //returns total number of processors available to system including logical hyperthreaded processors

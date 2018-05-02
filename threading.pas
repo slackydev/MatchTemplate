@@ -22,18 +22,18 @@ unit Threading;
 {$modeswitch advancedrecords}
 {$inline on}
 interface
+
 uses
-  {$ifdef unix}cthreads,cmem,{$endif} // c memory manager can be notably faster on some platforms
+  {$ifdef unix}cthreads, cmem,{$endif} // c memory manager can be notably faster on some platforms
   SysUtils, Classes;
 
+
 type
-  PParamArray = ^TParamArray;
-  TParamArray = array[Word] of Pointer;
-
+  PParamArray   = ^TParamArray;
+  TParamArray   = array[Word] of Pointer;
   TThreadMethod = procedure(Params: PParamArray; iLow, iHigh: Int32);
-  TThreadId = Int32;
+  EThreadSignal = (tsSleeping, tsAwaiting, tsWorking, tsReady, tsKill);
 
-  EThreadState = (tsSleeping, tsAwaiting, tsWorking, tsReady);
 
   TExecThread = class(TThread)
   private
@@ -42,23 +42,25 @@ type
     FRangeLo, FRangeHi: Int32;
     procedure Execute; override; // hide this method to avoid confusion
   public
-    State: EThreadState;
+    State: EThreadSignal;
+    Temporary: Boolean;
 
     constructor Create();
     procedure SetMethod(Method: TThreadMethod);
-    procedure SetArgument(argId:Int32; arg:Pointer);
+    procedure SetArgument(argId:Int32; arg: Pointer);
     procedure SetArguments(args: array of Pointer);
     function Run(iLow, iHigh: Int32): Boolean;
     function Completed(): Boolean; inline;
   end;
   TThreadArray = array of TExecThread;
 
+
   TThreadPool = class(TObject)
   private
     FMaxThreads: SizeInt;
     FThreads: TThreadArray;
-    function  FindAvailableThread(): TThreadId; inline;
-    function  PrepareThread(Method: TThreadMethod): TExecThread; inline;
+    function FindAvailableThread(): Int32; inline;
+    function PrepareThread(Method: TThreadMethod): TExecThread; inline;
   public  
     constructor Create(MaxThreads: SizeInt);
     destructor Free();
@@ -69,6 +71,8 @@ type
 var
   ThreadPool: TThreadPool;
 
+const
+  NO_THREADS_AVAILABLE = -1;
 
 
 implementation
@@ -83,7 +87,8 @@ uses
 constructor TExecThread.Create();
 begin
   FreeOnTerminate := True;
-  State := tsSleeping;
+  Temporary := False;
+  State     := tsSleeping;
   inherited Create(False, 1024*512); //default = 4MiB, we set 512KiB
 end;
 
@@ -92,12 +97,14 @@ label startloc;
 begin
 startloc:
   Self.Priority := tpIdle;
-  while (Self.State <> tsReady) do Sleep(1);
+  while not(Self.State in [tsReady, tsKill]) do Sleep(1);
+  if (Self.State = tsKill) then Exit;
   Self.Priority := tpNormal;
 
   State := tsWorking;
   FMethod(@FParams, FRangeLo, FRangeHi);
-  State := tsSleeping;
+
+  Self.State := tsSleeping;
 
   goto startloc;
 end;
@@ -116,7 +123,7 @@ procedure TExecThread.SetArguments(args: array of Pointer);
 var arg:Int32;
 begin
   for arg:=0 to High(args) do
-    self.FParams[arg] := args[arg];
+    Self.FParams[arg] := args[arg];
 end;
 
 function TExecThread.Run(iLow, iHigh: Int32): Boolean;
@@ -126,14 +133,17 @@ begin
   begin
     FRangeLo := iLow;
     FRangeHi := iHigh;
-
-    self.State := tsReady;
+    Self.State := tsReady;
   end;
 end;
 
 function TExecThread.Completed(): Boolean;
 begin
-  Result := self.State = tsSleeping;
+  Result := (Self.State = tsSleeping);
+
+  // if the thread is completed, and it was a temporary thread then free it:
+  if Result and Self.Temporary then
+    Self.State := tsKill;
 end;
 
 
@@ -157,29 +167,44 @@ begin
   begin
     if self.FThreads[i] <> nil then
     begin
-      self.FThreads[i].Terminate();
+      //self.FThreads[i].Terminate();
+      self.FThreads[i].State := tsKill; //this will cause it to free itself when it's ready
       self.FThreads[i] := nil;
     end;
   end;
 end;
 
-function TThreadPool.FindAvailableThread(): TThreadId;
+function TThreadPool.FindAvailableThread(): Int32;
 var i:Int32;
 begin
-  while True do
-  begin
-    for i:=0 to High(self.FThreads) do
-      if (self.FThreads[i].State = tsSleeping) then
-        Exit(TThreadId(i));
-    Sleep(0);
- end;
+  for i:=0 to High(self.FThreads) do
+    if (self.FThreads[i].State = tsSleeping) then
+      Exit(i);
+
+  // no threads available - need to create a temporary thread
+  Result := NO_THREADS_AVAILABLE;
 end;
 
 function TThreadPool.PrepareThread(Method: TThreadMethod): TExecThread;
+var
+  tid: Int32;
 begin
-  Result := self.FThreads[FindAvailableThread()];
-  Result.State := tsAwaiting;
-  Result.SetMethod(Method);
+  tid := FindAvailableThread();
+  if tid <> NO_THREADS_AVAILABLE then
+  begin
+    // when there are threads pre-allocated and ready for work we just reuse those
+    Result := self.FThreads[FindAvailableThread()];
+    Result.State := tsAwaiting;
+    Result.SetMethod(Method);
+  end else
+  begin
+    // if there are no threads we create a one time use thread that will free
+    // itself automatically once it has executed.
+    Result := TExecThread.Create();
+    Result.Temporary := True;
+    Result.State := tsAwaiting;
+    Result.SetMethod(Method);
+  end;
 end;
 
 procedure TThreadPool.DoParallel(Method: TThreadMethod; Args: array of Pointer; iLow, iHigh: Int32; nThreads: UInt8; Fallback: Boolean=False);
@@ -217,14 +242,16 @@ begin
     A := B + 1;
   end;
 
+  // PS: Thread[i].Completed also checks if the thread was a a temporary thread,
+  // and frees it if that was the case, when the thread is Completed that is.
   for i:=0 to nThreads-1 do
-    while not Thread[i].Completed do
+    while not Thread[i].Completed() do
       Sleep(0);
 end;
 
 
 initialization
-  WriteLn('>>> Spawning ',GetSystemThreadCount(),' worker threads');
+  WriteLn('TM: Spawning ',GetSystemThreadCount(),' worker threads');
   ThreadPool := TThreadPool.Create(GetSystemThreadCount());
 
 end.

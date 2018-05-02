@@ -17,7 +17,7 @@ library libMatchTempl;
 {$I header.inc}
 
 uses
-  SysUtils, Math, core, matchTempl, matrix, FFTW3, FFTPACK4, cpuinfo;
+  SysUtils, Math, SimbaPlugin, core, matchTempl, matrix, FFTW3, FFTPACK4, cpuinfo;
 
 // -----------------------------------------------------------------------------
 // Complex data, FFI is not reliable here
@@ -62,8 +62,7 @@ end;
 
 
 // -----------------------------------------------------------------------------
-// export a couple of stats related method to work with template matching result
-// complex data, FFI is not fine.
+// Complex data, FFI is not reliable here
 
 procedure expMatchTemplate(const Params: PParamArray; const Result:Pointer); callconv export;
 begin
@@ -117,7 +116,36 @@ begin
   T2DIntArray(Result^) := Crop(T2DIntArray(Params^[0]^), TBox(Params^[1]^));
 end;
 
-{$I SimbaPlugin.inc}
+
+initialization
+  AddGlobalType('TReal',        'Single');
+  AddGlobalType('TRealArray',   'array of TReal');
+  AddGlobalType('T2DRealArray', 'array of TRealArray');
+  AddGlobalType('ETMFormula',   '(TM_CCORR, TM_CCORR_NORMED, TM_CCOEFF, TM_CCOEFF_NORMED, TM_SQDIFF, TM_SQDIFF_NORMED);');
+
+  // FFT and FFTW related methods
+  AddGlobalMethod(@LoadFFTWFrom,       'function  LoadFFTWFrom(constref Path: String): LongBool; native;');
+  AddGlobalMethod(@DisableFFTW,        'procedure DisableFFTW();');
+  AddGlobalMethod(@EnableFFTW,         'function  EnableFFTW(): LongBool');
+  AddGlobalMethod(@SetMaxFFTThreads,   'procedure SetMaxFFTThreads(MaxThreads: Int32);');
+  AddGlobalMethod(@EnableFFTCache,     'procedure EnableFFTCache(Enabled: LongBool);');
+  AddGlobalMethod(@ClearFFTCache,      'procedure ClearFFTCache();');
+
+  // match template
+  AddGlobalMethod(@expMatchTemplate, 'function MatchTemplate(constref Img, Sub: T2DIntArray; Formula: ETMFormula=TM_CCOEFF_NORMED): T2DRealArray; native;');
+
+  // stats helper methods
+  AddGlobalMethod(@expMin,        'function T2DRealArray.Min(): TReal; constref; native;');
+  AddGlobalMethod(@expMax,        'function T2DRealArray.Max(): TReal; constref; native;');
+  AddGlobalMethod(@expArgMin,     'function T2DRealArray.ArgMin(): TPoint; constref; native;');
+  AddGlobalMethod(@expArgMax,     'function T2DRealArray.ArgMax(): TPoint; constref; native;');
+  AddGlobalMethod(@expNormMinMax, 'function T2DRealArray.NormMinMax(A,B: TReal): T2DRealArray; constref; native;');
+
+  // image helpers
+  AddGlobalMethod(@expCompareImageAt, 'function T2DIntArray.CompareImageAt(Templ: T2DIntArray; Pt: TPoint; Tol: Int32): Single; constref; native;');
+  AddGlobalMethod(@expDownscaleImage, 'function T2DIntArray.DownscaleImage(Scale: Int32): T2DIntArray; constref; native;');
+  AddGlobalMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand, Smooth: LongBool): T2DIntArray; constref; native;');
+  AddGlobalMethod(@expCrop,           'function T2DIntArray.Crop(B: TBox): T2DIntArray; constref; native;');
 
 
 end.

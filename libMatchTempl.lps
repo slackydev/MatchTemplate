@@ -40,23 +40,19 @@
         </CompilerOptions>
       </Item1>
     </BuildModes>
-    <Units Count="35">
+    <Units Count="39">
       <Unit0>
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="50"/>
-        <CursorPos X="90" Y="69"/>
+        <CursorPos X="38" Y="17"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="SimbaPlugin.inc"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="40"/>
-        <CursorPos X="40" Y="60"/>
+        <EditorIndex Value="-1"/>
         <UsageCount Value="100"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="radix2_fft.pas"/>
@@ -67,18 +63,17 @@
       </Unit2>
       <Unit3>
         <Filename Value="header.inc"/>
-        <EditorIndex Value="3"/>
-        <CursorPos X="30" Y="24"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="threading.pas"/>
         <UnitName Value="Threading"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="79"/>
-        <CursorPos X="30" Y="80"/>
-        <UsageCount Value="99"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="218"/>
+        <CursorPos X="24" Y="252"/>
+        <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit4>
       <Unit5>
@@ -103,10 +98,10 @@
       </Unit7>
       <Unit8>
         <Filename Value="core.pas"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="45"/>
         <CursorPos X="3" Y="29"/>
-        <UsageCount Value="82"/>
+        <UsageCount Value="83"/>
         <Loaded Value="True"/>
       </Unit8>
       <Unit9>
@@ -132,11 +127,8 @@
       </Unit11>
       <Unit12>
         <Filename Value="matrix\matrix.pas"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="55"/>
-        <CursorPos X="10" Y="76"/>
-        <UsageCount Value="66"/>
-        <Loaded Value="True"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="67"/>
       </Unit12>
       <Unit13>
         <Filename Value="fftpack\fftpack.pas"/>
@@ -174,26 +166,26 @@
       </Unit17>
       <Unit18>
         <Filename Value="matchTempl.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="7"/>
         <CursorPos X="81" Y="27"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="57"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="fftlib\FFTPACK4.pas"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="240"/>
         <CursorPos X="23" Y="276"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit19>
       <Unit20>
         <Filename Value="fftlib\FFTW3.pas"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="345"/>
         <CursorPos X="28" Y="344"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit20>
       <Unit21>
@@ -232,10 +224,10 @@
       </Unit25>
       <Unit26>
         <Filename Value="matrix\imaging.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="8"/>
         <TopLine Value="52"/>
         <CursorPos X="9" Y="84"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
@@ -253,8 +245,8 @@
       <Unit29>
         <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\objpas\classes\classesh.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="1525"/>
-        <CursorPos X="22" Y="1546"/>
+        <TopLine Value="1357"/>
+        <CursorPos X="22" Y="1494"/>
         <UsageCount Value="11"/>
       </Unit29>
       <Unit30>
@@ -289,128 +281,126 @@
         <CursorPos X="3" Y="27"/>
         <UsageCount Value="10"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="cpuinfo.pas"/>
+        <EditorIndex Value="6"/>
+        <CursorPos X="32" Y="20"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\win32\system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="16"/>
+        <UsageCount Value="10"/>
+      </Unit36>
+      <Unit37>
+        <Filename Value="C:\lazarus\fpc\2.6.4\source\rtl\bsd\sysctl.pp"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="97"/>
+        <CursorPos X="18" Y="84"/>
+        <UsageCount Value="10"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="SimbaPlugin.pas"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="10"/>
+      </Unit38>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
-        <Filename Value="core.pas"/>
-        <Caret Line="25" Column="3" TopLine="10"/>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="53" Column="3" TopLine="41"/>
       </Position1>
       <Position2>
-        <Filename Value="core.pas"/>
-        <Caret Line="108" TopLine="87"/>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="484" Column="4" TopLine="453"/>
       </Position2>
       <Position3>
-        <Filename Value="threading.pas"/>
-        <Caret Line="52" Column="47" TopLine="34"/>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="492" Column="9" TopLine="454"/>
       </Position3>
       <Position4>
-        <Filename Value="threading.pas"/>
-        <Caret Line="232" Column="14" TopLine="197"/>
+        <Filename Value="matchTempl.pas"/>
+        <Caret Line="120" Column="36" TopLine="100"/>
       </Position4>
       <Position5>
-        <Filename Value="core.pas"/>
-        <Caret Line="98" Column="32" TopLine="78"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="60" Column="8" TopLine="25"/>
       </Position5>
       <Position6>
         <Filename Value="matchTempl.pas"/>
-        <Caret Line="189" Column="36" TopLine="166"/>
+        <Caret Line="52" Column="21" TopLine="35"/>
       </Position6>
       <Position7>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="45" Column="21" TopLine="32"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="22" Column="101" TopLine="16"/>
       </Position7>
       <Position8>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="89" Column="14" TopLine="70"/>
+        <Filename Value="core.pas"/>
+        <Caret Line="40" Column="3" TopLine="20"/>
       </Position8>
       <Position9>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="94" Column="19" TopLine="74"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="101" Column="39" TopLine="75"/>
       </Position9>
       <Position10>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="101" Column="7" TopLine="93"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="112" Column="38" TopLine="84"/>
       </Position10>
       <Position11>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="120" Column="64" TopLine="104"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="118" Column="5" TopLine="84"/>
       </Position11>
       <Position12>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="133" Column="26" TopLine="104"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="70" Column="94" TopLine="50"/>
       </Position12>
       <Position13>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="73" Column="35" TopLine="38"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="84" Column="35" TopLine="55"/>
       </Position13>
       <Position14>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="110" Column="26" TopLine="91"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="106" Column="6" TopLine="28"/>
       </Position14>
       <Position15>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="118" Column="30" TopLine="85"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="84" Column="12" TopLine="2"/>
       </Position15>
       <Position16>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="55" Column="46" TopLine="35"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="100" Column="61" TopLine="83"/>
       </Position16>
       <Position17>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="53" Column="3" TopLine="41"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="35" Column="16" TopLine="24"/>
       </Position17>
       <Position18>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="484" Column="4" TopLine="453"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="190" Column="12" TopLine="175"/>
       </Position18>
       <Position19>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="492" Column="9" TopLine="454"/>
+        <Filename Value="threading.pas"/>
+        <Caret Line="241" Column="23" TopLine="215"/>
       </Position19>
       <Position20>
-        <Filename Value="SimbaPlugin.inc"/>
-        <Caret Line="59" Column="58" TopLine="43"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="118" Column="13" TopLine="94"/>
       </Position20>
       <Position21>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="120" Column="36" TopLine="100"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="24" Column="76"/>
       </Position21>
       <Position22>
         <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="60" Column="8" TopLine="25"/>
+        <Caret Line="19" Column="27"/>
       </Position22>
       <Position23>
-        <Filename Value="SimbaPlugin.inc"/>
-        <Caret Line="60" Column="33" TopLine="43"/>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="21" Column="24"/>
       </Position23>
-      <Position24>
-        <Filename Value="matchTempl.pas"/>
-        <Caret Line="52" Column="21" TopLine="35"/>
-      </Position24>
-      <Position25>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="22" Column="101" TopLine="16"/>
-      </Position25>
-      <Position26>
-        <Filename Value="core.pas"/>
-        <Caret Line="40" Column="3" TopLine="20"/>
-      </Position26>
-      <Position27>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="101" Column="39" TopLine="75"/>
-      </Position27>
-      <Position28>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="112" Column="38" TopLine="84"/>
-      </Position28>
-      <Position29>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="118" Column="5" TopLine="84"/>
-      </Position29>
-      <Position30>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="70" Column="94" TopLine="50"/>
-      </Position30>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

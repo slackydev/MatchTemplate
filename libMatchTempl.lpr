@@ -98,7 +98,7 @@ end;
 
 procedure expCompareImageAt(const Params: PParamArray; const Result:Pointer); callconv export;
 begin
-  Single(Result^) := CompareImageAt(T2DIntArray(Params^[0]^), T2DIntArray(Params^[1]^), TPoint(Params^[2]^), Int32(Params^[2]^));
+  Single(Result^) := CompareImageAt(T2DIntArray(Params^[0]^), T2DIntArray(Params^[1]^), TPoint(Params^[2]^), Int32(Params^[3]^));
 end;
 
 procedure expDownscaleImage(const Params: PParamArray; const Result:Pointer); callconv export;

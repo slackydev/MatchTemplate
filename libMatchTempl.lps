@@ -44,9 +44,8 @@
       <Unit0>
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="79"/>
-        <CursorPos X="111" Y="100"/>
+        <TopLine Value="109"/>
+        <CursorPos X="3" Y="125"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -64,14 +63,14 @@
       </Unit2>
       <Unit3>
         <Filename Value="header.inc"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="100"/>
         <Loaded Value="True"/>
       </Unit3>
       <Unit4>
         <Filename Value="threading.pas"/>
         <UnitName Value="Threading"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="7"/>
         <TopLine Value="218"/>
         <CursorPos X="24" Y="252"/>
         <UsageCount Value="100"/>
@@ -99,7 +98,7 @@
       </Unit7>
       <Unit8>
         <Filename Value="core.pas"/>
-        <EditorIndex Value="8"/>
+        <EditorIndex Value="9"/>
         <TopLine Value="45"/>
         <CursorPos X="3" Y="29"/>
         <UsageCount Value="85"/>
@@ -128,7 +127,7 @@
       </Unit11>
       <Unit12>
         <Filename Value="matrix\matrix.pas"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="54"/>
         <CursorPos X="10" Y="74"/>
         <UsageCount Value="69"/>
@@ -170,15 +169,15 @@
       </Unit17>
       <Unit18>
         <Filename Value="matchTempl.pas"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="7"/>
-        <CursorPos X="81" Y="27"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="457"/>
+        <CursorPos X="57" Y="391"/>
         <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit18>
       <Unit19>
         <Filename Value="fftlib\FFTPACK4.pas"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="5"/>
         <TopLine Value="240"/>
         <CursorPos X="23" Y="276"/>
         <UsageCount Value="38"/>
@@ -186,8 +185,8 @@
       </Unit19>
       <Unit20>
         <Filename Value="fftlib\FFTW3.pas"/>
-        <EditorIndex Value="5"/>
-        <TopLine Value="345"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="365"/>
         <CursorPos X="28" Y="344"/>
         <UsageCount Value="35"/>
         <Loaded Value="True"/>
@@ -228,7 +227,7 @@
       </Unit25>
       <Unit26>
         <Filename Value="matrix\imaging.inc"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="10"/>
         <TopLine Value="29"/>
         <CursorPos X="67" Y="32"/>
         <UsageCount Value="35"/>
@@ -287,7 +286,7 @@
       </Unit34>
       <Unit35>
         <Filename Value="cpuinfo.pas"/>
-        <EditorIndex Value="7"/>
+        <EditorIndex Value="8"/>
         <CursorPos X="32" Y="20"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
@@ -308,11 +307,15 @@
       </Unit37>
       <Unit38>
         <Filename Value="SimbaPlugin.pas"/>
-        <EditorIndex Value="-1"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="18"/>
+        <CursorPos X="37" Y="30"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="24" HistoryIndex="23">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="matchTempl.pas"/>
         <Caret Line="53" Column="3" TopLine="41"/>
@@ -409,6 +412,10 @@
         <Filename Value="libMatchTempl.lpr"/>
         <Caret Line="101" Column="36" TopLine="82"/>
       </Position24>
+      <Position25>
+        <Filename Value="libMatchTempl.lpr"/>
+        <Caret Line="100" Column="111" TopLine="112"/>
+      </Position25>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

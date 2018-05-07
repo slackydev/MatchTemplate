@@ -30,34 +30,54 @@ interface
 uses SysUtils;
 
 var
-  Methods: array of record ProcAddr: Pointer; ProcDef: PChar; end;
-  TypeDefs: array of record TypeName, TypeDef: PChar; end;
+  Methods: array of record ProcAddr: Pointer; ProcDef: AnsiString; end;
+  TypeDefs: array of record TypeName, TypeDef: AnsiString; end;
   OldMemoryManager: TMemoryManager;
   MemIsset: Boolean = False;
 
-procedure AddGlobalMethod(ProcAddr: Pointer; ProcDef: PChar);
-procedure AddGlobalType(TypeName, TypeDef: PChar);
+// for methods using FFI to handle calling conversion
+procedure AddFFIMethod(ProcAddr: Pointer; ProcDef: AnsiString);
+
+// for methods using Lape's own higher level calling conversion (LapeCall/lpc)
+procedure AddLPCMethod(ProcAddr: Pointer; ProcDef: AnsiString);
+
+// for all type declarations
+procedure AddGlobalType(TypeName, TypeDef: AnsiString);
+
 
 implementation
 
 
-procedure AddGlobalMethod(ProcAddr: Pointer; ProcDef: PChar);
+procedure AddFFIMethod(ProcAddr: Pointer; ProcDef: AnsiString);
 var L: Integer;
 begin
   L := Length(Methods);
   SetLength(Methods, L + 1);
   Methods[l].ProcAddr := ProcAddr;
-  Methods[l].ProcDef := ProcDef;
+  Methods[l].ProcDef  := ProcDef + #0;
 end;
 
-procedure AddGlobalType(TypeName, TypeDef: PChar);
+procedure AddLPCMethod(ProcAddr: Pointer; ProcDef: AnsiString);
+var L: Integer;
+begin
+  L := Length(Methods);
+  SetLength(Methods, L + 1);
+  Methods[l].ProcAddr := ProcAddr;
+  if ProcDef[Length(ProcDef)] <> ';' then ProcDef += ';';
+  Methods[l].ProcDef  := ProcDef + ' native;' + #0;
+end;
+
+
+
+procedure AddGlobalType(TypeName, TypeDef: AnsiString);
 var L: Integer;
 begin
   L := Length(TypeDefs);
   SetLength(TypeDefs, L + 1);
-  TypeDefs[l].TypeName := TypeName;
-  TypeDefs[l].TypeDef := TypeDef;
+  TypeDefs[l].TypeName := TypeName + #0;
+  TypeDefs[l].TypeDef  := TypeDef  + #0;
 end;
+
 
 
 // ----------------------------------------------------------------------------
@@ -87,7 +107,7 @@ begin
   if (x > -1) and (x < Length(Methods)) then
   begin
     ProcAddr := Methods[x].ProcAddr;
-    StrPCopy(ProcDef, Methods[x].ProcDef);
+    Move(Methods[x].ProcDef[1], ProcDef^, Length(Methods[x].ProcDef));
   end;
 end;
 
@@ -101,8 +121,8 @@ begin
   Result := x;
   if (x > -1) and (x < Length(TypeDefs)) then
   begin
-    StrPCopy(TypeName, TypeDefs[x].TypeName);
-    StrPCopy(TypeDef,  TypeDefs[x].TypeDef);
+    Move(TypeDefs[x].TypeName[1], TypeName^, Length(TypeDefs[x].TypeName));
+    Move(TypeDefs[x].TypeDef [1], TypeDef^,  Length(TypeDefs[x].TypeDef));
   end;
 end;
 
@@ -111,12 +131,16 @@ begin
   SetMemoryManager(OldMemoryManager);
 end;
 
+
 exports GetPluginABIVersion;
 exports SetPluginMemManager;
 exports GetFunctionCount;
 exports GetFunctionInfo;
 exports GetTypeCount;
 exports GetTypeInfo;
-exports OnDetach; 
+//exports OnAttach;
+exports OnDetach;
+
+
 
 end.

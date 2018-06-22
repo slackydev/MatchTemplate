@@ -44,6 +44,15 @@ procedure AddLPCMethod(ProcAddr: Pointer; ProcDef: AnsiString);
 // for all type declarations
 procedure AddGlobalType(TypeName, TypeDef: AnsiString);
 
+// export these in the main .lpr file.
+function GetPluginABIVersion: Integer; callconv export;
+procedure SetPluginMemManager(MemMgr: TMemoryManager); callconv export;
+function GetFunctionCount: Integer; callconv export;
+function GetFunctionInfo(x: Integer; var ProcAddr: Pointer; var ProcDef: PChar): Integer; callconv export;
+function GetTypeCount: Integer; callconv export;
+function GetTypeInfo(x: Integer; var TypeName, TypeDef: PChar): Integer; callconv export;
+procedure OnDetach; callconv export;
+
 
 implementation
 
@@ -90,10 +99,12 @@ end;
 
 procedure SetPluginMemManager(MemMgr: TMemoryManager); callconv export;
 begin
-  if MemIsset then Exit;
-  GetMemoryManager(OldMemoryManager);
-  SetMemoryManager(MemMgr);
-  memisset := True;
+  if not MemIsset then
+  begin
+    GetMemoryManager(OldMemoryManager);
+    SetMemoryManager(MemMgr);
+    MemIsset := True;
+  end;
 end;
 
 function GetFunctionCount: Integer; callconv export;
@@ -130,16 +141,6 @@ procedure OnDetach; callconv export;
 begin
   SetMemoryManager(OldMemoryManager);
 end;
-
-
-exports GetPluginABIVersion;
-exports SetPluginMemManager;
-exports GetFunctionCount;
-exports GetFunctionInfo;
-exports GetTypeCount;
-exports GetTypeInfo;
-//exports OnAttach;
-exports OnDetach;
 
 
 

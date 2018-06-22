@@ -3,8 +3,8 @@
   <ProjectSession>
     <PathDelim Value="\"/>
     <Version Value="10"/>
-    <BuildModes Count="1" Active="Win-Slacky-FPC32">
-      <Item1 Name="Win-Slacky-FPC32">
+    <BuildModes Count="1" Active="Win32-Force-fpc2.6">
+      <Item1 Name="Win32-Force-fpc2.6">
         <CompilerOptions>
           <Version Value="11"/>
           <PathDelim Value="\"/>
@@ -44,8 +44,9 @@
       <Unit0>
         <Filename Value="libMatchTempl.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="109"/>
-        <CursorPos X="3" Y="125"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="100"/>
+        <CursorPos X="21" Y="128"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit0>
@@ -307,15 +308,14 @@
       </Unit37>
       <Unit38>
         <Filename Value="SimbaPlugin.pas"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="18"/>
-        <CursorPos X="37" Y="30"/>
+        <TopLine Value="24"/>
+        <CursorPos X="15" Y="46"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit38>
     </Units>
-    <JumpHistory Count="25" HistoryIndex="24">
+    <JumpHistory Count="24" HistoryIndex="23">
       <Position1>
         <Filename Value="matchTempl.pas"/>
         <Caret Line="53" Column="3" TopLine="41"/>
@@ -412,10 +412,6 @@
         <Filename Value="libMatchTempl.lpr"/>
         <Caret Line="101" Column="36" TopLine="82"/>
       </Position24>
-      <Position25>
-        <Filename Value="libMatchTempl.lpr"/>
-        <Caret Line="100" Column="111" TopLine="112"/>
-      </Position25>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

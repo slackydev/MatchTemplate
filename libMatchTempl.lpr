@@ -117,6 +117,19 @@ begin
 end;
 
 
+// ------------------------------------------------------------------------------------------------
+// Export for Simba
+// ------------------------------------------------------------------------------------------------
+exports GetPluginABIVersion;
+exports SetPluginMemManager;
+exports GetFunctionCount;
+exports GetFunctionInfo;
+exports GetTypeCount;
+exports GetTypeInfo;
+//exports OnAttach;
+exports OnDetach;
+
+
 initialization
   AddGlobalType('TReal',        'Single');
   AddGlobalType('TRealArray',   'array of TReal');
@@ -146,6 +159,4 @@ initialization
   AddLPCMethod(@expDownscaleImage, 'function T2DIntArray.DownscaleImage(Scale: Int32): T2DIntArray; constref;');
   AddLPCMethod(@expRotateImage,    'function T2DIntArray.RotateImage(Angle: Single; Expand, Smooth: LongBool): T2DIntArray; constref;');
   AddLPCMethod(@expCrop,           'function T2DIntArray.Crop(B: TBox): T2DIntArray; constref;');
-
-
 end.

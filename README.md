@@ -1,6 +1,6 @@
 Pure FPC implementation of FFT based template matching.
 
-Template matching is a technique for finding areas of an image that match (are similar) to a template image (smaller image).
+Template matching is a technique for finding areas of an image that match (are similar) to a smaller image.
 
 Exported:
 ```
